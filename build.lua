@@ -22,6 +22,7 @@ os.execute("mkdir -p " .. runsDir .. "testclassify");
 os.execute("cp " .. debug.getinfo(1).short_src .. " " .. luaDir);
 os.execute("cp " .. paramsFile .. " " .. luaDir);
 os.execute("cp " .. classifier .. " " .. luaDir);
+os.execute("cp run.lua " .. runName .. "/.");
 
 -- Generate our classes.txt
 if generateGroundTruth then
@@ -104,14 +105,16 @@ file = io.open(paramsDir .. params.column.printParamsFilename, "w");
 io.output(file);
 pv.printConsole(params);
 io.close(file);
-os.execute("cd " .. runName);
-os.execute(pathToBinary .. " -p "
-      .. paramsDir .. params.column.printParamsFilename
-      .. " -n");
-os.execute("cd -; cp "
+local command = 
+      "cd " .. runName .. "; "
+      .. pathToBinary .. " -p "
+      .. "params/" .. params.column.printParamsFilename
+      .. " -n; "
+      .. "cd -; cp "
       .. runName .. "/runs/" .. suffix .. "/"
       .. params.column.printParamsFilename
-      .. " " .. paramsDir);
+      .. " " .. paramsDir;
+os.execute(command);
 
 
 -----------------------------------------------------
@@ -145,19 +148,18 @@ for k, v in pairs(params) do
 end
 
 if generateGroundTruth then
-   pv.addGroup(pvParams, "GroundTruth", {
-            groupType         = "FilenameParsingGroundTruthLayer";
-            phase             = params[inputLayerNames[1]].phase + 1;
-            nxScale           = 1 / params.column.nx;
-            nyScale           = 1 / params.column.ny;
-            nf                = numCategories;
-            writeStep         = displayPeriod;
-            initialWriteTime  = displayPeriod;
-            inputLayerName    = inputLayerNames[1];
-            gtClassTrueValue  = 1;
-            gtClassFalseValue = 0;
-         }
-      );
+   params["GroundTruth"] = {
+         groupType         = "FilenameParsingGroundTruthLayer";
+         phase             = params[inputLayerNames[1]].phase + 1;
+         nxScale           = 1 / params.column.nx;
+         nyScale           = 1 / params.column.ny;
+         nf                = numCategories;
+         writeStep         = displayPeriod;
+         initialWriteTime  = displayPeriod;
+         inputLayerName    = inputLayerNames[1];
+         gtClassTrueValue  = 1;
+         gtClassFalseValue = 0;
+      };
 end
 
 -- Write the file and run it through PV with the dry run flag
@@ -165,15 +167,17 @@ file = io.open(paramsDir .. params.column.printParamsFilename, "w");
 io.output(file);
 pv.printConsole(params);
 io.close(file);
-os.execute("cd " .. runName);
-os.execute(pathToBinary .. " -p "
-      .. paramsDir .. params.column.printParamsFilename
-      .. " -n");
-os.execute("cd -; cp "
+
+command = 
+      "cd " .. runName .. "; "
+      .. pathToBinary .. " -p "
+      .. "params/" .. params.column.printParamsFilename
+      .. " -n; "
+      .. "cd -; cp "
       .. runName .. "/runs/" .. suffix .. "/"
       .. params.column.printParamsFilename
-      .. " " .. paramsDir);
-
+      .. " " .. paramsDir;
+os.execute(command);
 
 ------------------------------------------------
 -- Third run (write sparse code for test set) --
@@ -203,15 +207,16 @@ io.output(file);
 pv.printConsole(params);
 io.close(file);
 
-os.execute("cd " .. runName);
-os.execute(pathToBinary .. " -p "
-      .. paramsDir .. params.column.printParamsFilename
-      .. " -n");
-os.execute("cd -; cp "
+command = 
+      "cd " .. runName .. "; "
+      .. pathToBinary .. " -p "
+      .. "params/" .. params.column.printParamsFilename
+      .. " -n; "
+      .. "cd -; cp "
       .. runName .. "/runs/" .. suffix .. "/"
       .. params.column.printParamsFilename
-      .. " " .. paramsDir);
-
+      .. " " .. paramsDir;
+os.execute(command);
 
 ------------------------------------------------------------------
 -- Fourth run (train classifier on sparse code of training set) --
@@ -257,14 +262,16 @@ io.output(file);
 pv.printConsole(params);
 io.close(file);
 
-os.execute("cd " .. runName);
-os.execute(pathToBinary .. " -p "
-      .. paramsDir .. params.column.printParamsFilename
-      .. " -n");
-os.execute("cd -; cp "
+command = 
+      "cd " .. runName .. "; "
+      .. pathToBinary .. " -p "
+      .. "params/" .. params.column.printParamsFilename
+      .. " -n; "
+      .. "cd -; cp "
       .. runName .. "/runs/" .. suffix .. "/"
       .. params.column.printParamsFilename
-      .. " " .. paramsDir);
+      .. " " .. paramsDir;
+os.execute(command);
 
 
 -----------------------------------------------------------
@@ -303,16 +310,20 @@ io.output(file);
 pv.printConsole(params);
 io.close(file);
 
-os.execute("cd " .. runName);
-os.execute(pathToBinary .. " -p "
-      .. paramsDir .. params.column.printParamsFilename
-      .. " -n");
-os.execute("cd -; cp "
+command = 
+      "cd " .. runName .. "; "
+      .. pathToBinary .. " -p "
+      .. "params/" .. params.column.printParamsFilename
+      .. " -n; "
+      .. "cd -; cp "
       .. runName .. "/runs/" .. suffix .. "/"
       .. params.column.printParamsFilename
-      .. " " .. paramsDir);
+      .. " " .. paramsDir;
+os.execute(command);
+
 
 print("---------------------------------------\n");
 print("  Finished generating " .. runName .. "\n");
 print("---------------------------------------\n");
 
+dofile("run.lua");
