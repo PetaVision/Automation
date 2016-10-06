@@ -2,13 +2,13 @@
 -- Params --
 ------------
 
-local useGpu           = false;
+local useGpu           = true;
 local inputFeatures    = 3;
 local nbatch           = 32;
 local checkpointPeriod = displayPeriod * 100;
 local patchSize        = 8;
 local stride           = 2;
-local dictionarySize   = -1;
+local dictionarySize   = 512;
 local overcompleteness = 1;
 local momentumTau      = 200;
 local dWMax            = 10;
@@ -17,7 +17,7 @@ local AMin             = 0;
 local AMax             = infinity;
 local AShift           = 0.015;
 local VWidth           = 0; 
-local timeConstantTau  = displayPeriod / 8;
+local timeConstantTau  = displayPeriod / 5;
 local weightInit       = math.sqrt((1/patchSize)*(1/patchSize)*(1/inputFeatures));
 
 if dictionarySize == -1 then

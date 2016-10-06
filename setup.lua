@@ -8,14 +8,14 @@
 pathToBinary =
       os.getenv("HOME")
       .. "/workspace/OpenPV/build"
-      .. "/tests/BasicSystemTest/Debug/BasicSystemTest";
+      .. "/tests/BasicSystemTest/Release/BasicSystemTest";
 
 -- Path to PetaVision source
 pathToSource =
       os.getenv("HOME")
       .. "/workspace/OpenPV";
 
-numThreads = 24;
+numThreads = 48;
 
 -- TODO: Allow MPI as well
 
@@ -28,7 +28,7 @@ classifier = "networks/linear_classifier.lua";
 
 -- Global Configuration
 runVersion = 1;
-runName    = "cifar_demo" .. runVersion;
+runName    = "cifar_demo_" .. runVersion;
 
 displayPeriod   = 500;
 columnWidth      = 32;
@@ -48,10 +48,10 @@ inputLayerNames = {
       "Image"
    }; 
 inputTrainLists = {
-      "train.txt"
+      "/shared/cifar-10-batches-mat/mixed_cifar.txt"
    };
 inputTestLists  = {
-      "test.txt"
+      "/shared/cifar-10-batches-mat/cifar_mixed_test.txt"
    };
 
 -- The layer names listed here will be written to disk and

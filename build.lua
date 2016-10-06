@@ -104,10 +104,11 @@ file = io.open(paramsDir .. params.column.printParamsFilename, "w");
 io.output(file);
 pv.printConsole(params);
 io.close(file);
+os.execute("cd " .. runName);
 os.execute(pathToBinary .. " -p "
       .. paramsDir .. params.column.printParamsFilename
       .. " -n");
-os.execute("cp "
+os.execute("cd -; cp "
       .. runName .. "/runs/" .. suffix .. "/"
       .. params.column.printParamsFilename
       .. " " .. paramsDir);
@@ -164,10 +165,11 @@ file = io.open(paramsDir .. params.column.printParamsFilename, "w");
 io.output(file);
 pv.printConsole(params);
 io.close(file);
+os.execute("cd " .. runName);
 os.execute(pathToBinary .. " -p "
       .. paramsDir .. params.column.printParamsFilename
       .. " -n");
-os.execute("cp "
+os.execute("cd -; cp "
       .. runName .. "/runs/" .. suffix .. "/"
       .. params.column.printParamsFilename
       .. " " .. paramsDir);
@@ -200,10 +202,12 @@ file = io.open(paramsDir .. params.column.printParamsFilename, "w");
 io.output(file);
 pv.printConsole(params);
 io.close(file);
+
+os.execute("cd " .. runName);
 os.execute(pathToBinary .. " -p "
       .. paramsDir .. params.column.printParamsFilename
       .. " -n");
-os.execute("cp "
+os.execute("cd -; cp "
       .. runName .. "/runs/" .. suffix .. "/"
       .. params.column.printParamsFilename
       .. " " .. paramsDir);
@@ -252,10 +256,12 @@ file = io.open(paramsDir .. params.column.printParamsFilename, "w");
 io.output(file);
 pv.printConsole(params);
 io.close(file);
+
+os.execute("cd " .. runName);
 os.execute(pathToBinary .. " -p "
       .. paramsDir .. params.column.printParamsFilename
       .. " -n");
-os.execute("cp "
+os.execute("cd -; cp "
       .. runName .. "/runs/" .. suffix .. "/"
       .. params.column.printParamsFilename
       .. " " .. paramsDir);
@@ -296,10 +302,12 @@ file = io.open(paramsDir .. params.column.printParamsFilename, "w");
 io.output(file);
 pv.printConsole(params);
 io.close(file);
+
+os.execute("cd " .. runName);
 os.execute(pathToBinary .. " -p "
       .. paramsDir .. params.column.printParamsFilename
       .. " -n");
-os.execute("cp "
+os.execute("cd -; cp "
       .. runName .. "/runs/" .. suffix .. "/"
       .. params.column.printParamsFilename
       .. " " .. paramsDir);
