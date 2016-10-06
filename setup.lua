@@ -15,6 +15,10 @@ pathToSource =
       os.getenv("HOME")
       .. "/workspace/OpenPV";
 
+numThreads = 24;
+
+-- TODO: Allow MPI as well
+
 -- The network params file should use the values below.
 -- The params file should *not* call pv.printConsole()
 -- at the end. This script expects the network params
@@ -60,6 +64,7 @@ layersToClassify = {
 layersToClassifyFeatures = {};
 layersToClassifyXScale   = {};
 layersToClassifyYScale   = {};
+plasticConns             = {};
 
 -- This requires only one input layer be specified, and
 -- for that layer to be an ImageLayer

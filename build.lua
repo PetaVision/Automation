@@ -56,8 +56,10 @@ local suffix;
 ------------------------------------
 
 suffix = "learndictionary";
+
+-- Set column params
 params.column.outputPath =
-      runName .. "/runs/" .. suffix;
+      "runs/" .. suffix;
       
 params.column.checkpointWriteDir =
       params.column.outputPath .. "/checkpoints";
@@ -69,6 +71,7 @@ params.column.stopTime =
       displayPeriod * inputTrainFiles
     / params.column.nbatch * unsupervisedEpochs;
 
+-- Set our input to training set and set display period 
 for index, layerName in pairs(inputLayerNames) do
    params[layerName].displayPeriod = displayPeriod;
    params[layerName].inputPath     = inputTrainLists[index]; 
@@ -78,18 +81,21 @@ for index, layerName in pairs(layersToClassify) do
    -- Write out our sparse code for analysis
    params[layerName].initialWriteTime = displayPeriod;
    params[layerName].writeStep        = displayPeriod;
-   
+    
    -- Store the dimensions of the layers to classify for later
    layersToClassifyFeatures[layerName]  = params[layerName].nf;
    layersToClassifyXScale[layerName]  = params[layerName].nxScale;
    layersToClassifyYScale[layerName]  = params[layerName].nyScale;
 end
 
+local plasticConnIndex = 1;
 for k, v in pairs(params) do
    if params[k].plasticityFlag == true then
       -- Write our plastic connections right at the end of the run
-      params[k].initialWriteTime = params.column.stopTime;
-      params[k].writeStep        = params.column.stopTime;
+      plasticConns[plasticConnIndex] = k;
+      params[k].initialWriteTime     = params.column.stopTime;
+      params[k].writeStep            = params.column.stopTime;
+      plasticConnIndex = plasticConnIndex + 1;
    end
 end
 
@@ -114,7 +120,7 @@ os.execute("cp "
 suffix = "writetrain";
 params.column.checkpointWrite = false;
 params.column.outputPath =
-      runName .. "/runs/" .. suffix;
+      "runs/" .. suffix;
 
 params.column.checkpointWriteDir =
       params.column.outputPath .. "/checkpoints";
@@ -131,16 +137,27 @@ for k, v in pairs(params) do
    if v.plasticityFlag == true then
       v.plasticityFlag   = false;
       v.weightInitType   = "FileWeight";
-      v.initWeightsFile  = runName .. "/dictionary/" .. k .. "_W.pvp";
+      v.initWeightsFile  = "dictionary/" .. k .. "_W.pvp";
       v.initialWriteTime = -1;
       v.writeStep        = -1;
    end
 end
 
-----------------------------------------------------
--- TODO: check generateGroundTruth here and add a --
--- FilenameParsingGroundTruthLayer                --
-----------------------------------------------------
+if generateGroundTruth then
+   pv.addGroup(pvParams, "GroundTruth", {
+            groupType         = "FilenameParsingGroundTruthLayer";
+            phase             = params[inputLayerNames[1]].phase + 1;
+            nxScale           = 1 / params.column.nx;
+            nyScale           = 1 / params.column.ny;
+            nf                = numCategories;
+            writeStep         = displayPeriod;
+            initialWriteTime  = displayPeriod;
+            inputLayerName    = inputLayerNames[1];
+            gtClassTrueValue  = 1;
+            gtClassFalseValue = 0;
+         }
+      );
+end
 
 -- Write the file and run it through PV with the dry run flag
 file = io.open(paramsDir .. params.column.printParamsFilename, "w");
@@ -163,7 +180,7 @@ os.execute("cp "
 suffix = "writetest";
 
 params.column.outputPath =
-      runName .. "/runs/" .. suffix;
+      "runs/" .. suffix;
 
 params.column.checkpointWriteDir =
       params.column.outputPath .. "/checkpoints";
@@ -201,7 +218,7 @@ params = dofile(classifier);
 suffix = "trainclassify";
 
 params.column.outputPath = 
-      runName .. "/runs/" .. suffix;
+      "runs/" .. suffix;
 
 params.column.checkpointWriteDir =
       params.column.outputPath .. "/checkpoints";
@@ -223,11 +240,10 @@ for k, v in pairs(params) do
    end
 end
 
-params.GroundTruth.inputPath = runName .. "/groundtruth/train_gt.pvp";
+params.GroundTruth.inputPath = "groundtruth/train_gt.pvp";
 
 for index, layerName in pairs(layersToClassify) do
-   params[layerName].inputPath = runName
-                                 .. "/sparse/train/"
+   params[layerName].inputPath = "sparse/train/"
                                  .. layerName .. ".pvp";
 end
 
@@ -250,7 +266,7 @@ os.execute("cp "
 -----------------------------------------------------------
 
 suffix = "testclassify";
-params.column.outputPath          = runName .. "/runs/" .. suffix;
+params.column.outputPath          = "runs/" .. suffix;
 params.column.checkpointWriteDir  = params.column.outputPath .. "/checkpoints";
 params.column.printParamsFilename = runName .. "_" .. suffix .. ".params";
 params.column.checkpointWrite     = false;
@@ -267,15 +283,13 @@ for k, v in pairs(params) do
 end
 
 for index, layerName in pairs(layersToClassify) do
-   params[layerName].inputPath = runName
-                                 .. "/sparse/test/"
+   params[layerName].inputPath = "sparse/test/"
                                  .. layerName .. ".pvp";
 end
 
 params.CategoryEstimate.writeStep        = 1;
 params.CategoryEstimate.initialWriteTime = 1;
-params.GroundTruth.inputPath             = runName
-                                           .. "/groundtruth/test_gt.pvp";
+params.GroundTruth.inputPath             = "groundtruth/test_gt.pvp";
 
 -- Write the file and run it through PV with the dry run flag
 file = io.open(paramsDir .. params.column.printParamsFilename, "w");
@@ -291,6 +305,6 @@ os.execute("cp "
       .. " " .. paramsDir);
 
 print("---------------------------------------\n");
-print("Finished generating " .. runName .. "\n");
+print("  Finished generating " .. runName .. "\n");
 print("---------------------------------------\n");
 
