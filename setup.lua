@@ -15,9 +15,15 @@ pathToSource =
       os.getenv("HOME")
       .. "/workspace/OpenPV";
 
-numThreads = 48;
+-- Threads / Rows / Columns for sparse coding
+numSparseThreads = 8;
+numSparseRows    = 2;
+numSparseCols    = 2;
 
--- TODO: Allow MPI as well
+-- Threads / Rows / Columns for classifier
+numClassThreads  = 32;
+numClassRows     = 1;
+numClassCols     = 1;
 
 -- The network params file should use the values below.
 -- The params file should *not* call pv.printConsole()

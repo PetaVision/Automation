@@ -1,11 +1,25 @@
 #!/usr/bin/lua
 
+local mpiPreSparse  = "";
+local mpiPostSparse = "";
+if numSparseRows * numSparseCols > 1 then
+   mpiPreSparse  = "mpiexec -np " .. (numSparseRows * numSparseCols) .. " ";
+   mpiPostSparse = " -rows " .. mpiSparseRows .. " -columns " .. mpiSparseCols;
+end
+
+local mpiPreClass  = "";
+local mpiPostClass = "";
+if numClassRows * numClassCols > 1 then
+   mpiPreClass  = "mpiexec -np " .. (numClassRows * numClassCols) .. " ";
+   mpiPostClass = " -rows " .. mpiClassRows .. " -columns " .. mpiClassCols;
+end
+
 local cdPre  = "cd " .. runName .. "; ";
 
 -- Run inital training
-os.execute(cdPre .. pathToBinary
+os.execute(cdPre .. mpiPreSparse .. pathToBinary
            .. " -p params/" .. runName .. "_learndictionary.params"
-           .. " -t " .. numThreads);
+           .. " -t " .. numSparseThreads .. mpiPostSparse);
 
 -- Copy dictionary to dictionary directory
 for index, connName in pairs(plasticConns) do
@@ -15,10 +29,18 @@ for index, connName in pairs(plasticConns) do
               .. runName .. "/dictionary");
 end
 
+if generateGroundTruth then
+   -- If we have a FilenameParsingGroundTruthLayer,
+   -- we can't split into rows / cols
+   mpiPreSparse     = mpiPreClass;
+   mpiPostSparse    = mpiPostClass;
+   mpiSparseThreads = mpiClassThreads;
+end
+
 -- Run write train set
-os.execute(cdPre .. pathToBinary
+os.execute(cdPre .. mpiPreSparse .. pathToBinary
            .. " -p params/" .. runName .. "_writetrain.params"
-           .. " -t " .. numThreads);
+           .. " -t " .. numSparseThreads .. mpiPostSparse);
 
 -- Copy output files and rename ground truth if generated
 for index, layerName in pairs(layersToClassify) do
@@ -29,9 +51,9 @@ for index, layerName in pairs(layersToClassify) do
 end
 
 -- Run write test set
-os.execute(cdPre .. pathToBinary
+os.execute(cdPre .. mpiPreSparse .. pathToBinary
            .. " -p params/" .. runName .. "_writetest.params"
-           .. " -t " .. numThreads);
+           .. " -t " .. numSparseThreads .. mpiPostSparse);
 
 -- Copy output files and rename ground truth if generated
 for index, layerName in pairs(layersToClassify) do
@@ -42,9 +64,9 @@ for index, layerName in pairs(layersToClassify) do
 end
 
 -- Run train classifier
-os.execute(cdPre .. pathToBinary
+os.execute(cdPre .. mpiPreClass .. pathToBinary
            .. " -p params/" .. runName .. "_trainclassify.params"
-           .. " -t " .. numThreads);
+           .. " -t " .. numClassThreads .. mpiPostClass);
 
 -- Copy learned weights
 for index, layerName in pairs(layersToClassify) do
@@ -56,9 +78,9 @@ for index, layerName in pairs(layersToClassify) do
 end
 
 -- Run test classifier
-os.execute(cdPre .. pathToBinary
+os.execute(cdPre .. mpiPreClass .. pathToBinary
            .. " -p params/" .. runName .. "_testclassify.params"
-           .. " -t " .. numThreads);
+           .. " -t " .. numClassThreads .. mpiPostClass);
 
 -- Run final analysis script
    --TODO
