@@ -91,11 +91,11 @@ end
 
 local plasticConnIndex = 1;
 for k, v in pairs(params) do
-   if params[k].plasticityFlag == true then
+   if v.plasticityFlag == true then
       -- Write our plastic connections right at the end of the run
       plasticConns[plasticConnIndex] = k;
-      params[k].initialWriteTime     = params.column.stopTime;
-      params[k].writeStep            = params.column.stopTime;
+      v.initialWriteTime     = params.column.stopTime;
+      v.writeStep            = params.column.stopTime;
       plasticConnIndex = plasticConnIndex + 1;
    end
 end
@@ -105,6 +105,8 @@ file = io.open(paramsDir .. params.column.printParamsFilename, "w");
 io.output(file);
 pv.printConsole(params);
 io.close(file);
+
+
 local command = 
       "cd " .. runName .. "; "
       .. pathToBinary .. " -p "
@@ -150,7 +152,7 @@ end
 if generateGroundTruth then
    params["GroundTruth"] = {
          groupType         = "FilenameParsingGroundTruthLayer";
-         phase             = params[inputLayerNames[1]].phase + 1;
+         phase             = params[ inputLayerNames[1] ].phase + 1;
          nxScale           = 1 / params.column.nx;
          nyScale           = 1 / params.column.ny;
          nf                = numCategories;

@@ -5,6 +5,7 @@
 local useGpu           = true;
 local inputFeatures    = 3;
 local nbatch           = 32;
+local plasticityFlag   = true;
 local checkpointPeriod = displayPeriod * 100;
 local patchSize        = 8;
 local stride           = 2;
@@ -172,6 +173,8 @@ pv.addGroup(pvParams, "S1ToImageReconS1Error", {
          momentumTau             = momentumTau;
          momentumMethod          = "viscosity";
          momentumDecay           = 0;
+         initialWriteTime        = -1;
+         writeStep               = -1;
       }
    );
 
