@@ -4,14 +4,14 @@ local mpiPreSparse  = "";
 local mpiPostSparse = "";
 if numSparseRows * numSparseCols > 1 then
    mpiPreSparse  = "mpiexec -np " .. (numSparseRows * numSparseCols) .. " ";
-   mpiPostSparse = " -rows " .. mpiSparseRows .. " -columns " .. mpiSparseCols;
+   mpiPostSparse = " -rows " .. numSparseRows .. " -columns " .. numSparseCols;
 end
 
 local mpiPreClass  = "";
 local mpiPostClass = "";
 if numClassRows * numClassCols > 1 then
    mpiPreClass  = "mpiexec -np " .. (numClassRows * numClassCols) .. " ";
-   mpiPostClass = " -rows " .. mpiClassRows .. " -columns " .. mpiClassCols;
+   mpiPostClass = " -rows " .. numClassRows .. " -columns " .. numClassCols;
 end
 
 local cdPre  = "cd " .. runName .. "; ";
@@ -34,7 +34,7 @@ if generateGroundTruth then
    -- we can't split into rows / cols
    mpiPreSparse     = mpiPreClass;
    mpiPostSparse    = mpiPostClass;
-   mpiSparseThreads = mpiClassThreads;
+   numSparseThreads = numClassThreads;
 end
 
 -- Run write train set
