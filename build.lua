@@ -85,8 +85,8 @@ for index, layerName in pairs(layersToClassify) do
     
    -- Store the dimensions of the layers to classify for later
    layersToClassifyFeatures[layerName]  = params[layerName].nf;
-   layersToClassifyXScale[layerName]  = params[layerName].nxScale;
-   layersToClassifyYScale[layerName]  = params[layerName].nyScale;
+   layersToClassifyXScale[layerName]    = params[layerName].nxScale;
+   layersToClassifyYScale[layerName]    = params[layerName].nyScale;
 end
 
 local plasticConnIndex = 1;
@@ -143,7 +143,7 @@ for k, v in pairs(params) do
    if v.plasticityFlag == true then
       v.plasticityFlag   = false;
       v.weightInitType   = "FileWeight";
-      v.initWeightsFile  = "dictionary/" .. k .. "_W.pvp";
+      v.initWeightsFile  = "dictionary/" .. k .. ".pvp";
       v.initialWriteTime = -1;
       v.writeStep        = -1;
    end
@@ -291,7 +291,7 @@ for k, v in pairs(params) do
    if v.plasticityFlag == true then
       v.plasticityFlag   = false;
       v.weightInitType   = "FileWeight";
-      v.initWeightsFile  = runName .. "/weights/" .. k .. "_W.pvp";
+      v.initWeightsFile  = runName .. "/weights/" .. k .. ".pvp";
       v.initialWriteTime = -1;
       v.writeStep        = -1;
    end
