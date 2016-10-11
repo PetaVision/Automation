@@ -36,14 +36,14 @@ classifier = "networks/linear_classifier.lua";
 runVersion = 1;
 runName    = "cifar_demo_" .. runVersion;
 
-displayPeriod   = 500;
+displayPeriod   = 250;
 columnWidth      = 32;
 columnHeight     = 32;
 
 inputTrainFiles = 50000;
 inputTestFiles  = 10000;
 
-unsupervisedEpochs = 2;
+unsupervisedEpochs = 1;
 classifierEpochs   = 50;
 
 debugParsing = false;
@@ -57,7 +57,7 @@ inputTrainLists = {
       "/shared/cifar-10-batches-mat/mixed_cifar.txt"
    };
 inputTestLists  = {
-      "/shared/cifar-10-batches-mat/cifar_mixed_test.txt"
+      "/shared/cifar-10-batches-mat/test_batch_randorder.txt"
    };
 
 -- The layer names listed here will be written to disk and

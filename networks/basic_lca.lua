@@ -4,12 +4,12 @@
 
 local useGpu           = true;
 local inputFeatures    = 3;
-local nbatch           = 32;
+local nbatch           = 20;
 local plasticityFlag   = true;
 local checkpointPeriod = displayPeriod * 100;
 local patchSize        = 8;
 local stride           = 2;
-local dictionarySize   = 512;
+local dictionarySize   = 256;
 local overcompleteness = 1;
 local momentumTau      = 200;
 local dWMax            = 10;
@@ -37,7 +37,7 @@ local pvParams = {
       groupType                     = "HyPerCol";
       startTime                     = 0;
       dt                            = 1;
-      progressInterval              = (displayPeriod * 10);
+      progressInterval              = displayPeriod / 5;
       randomSeed                    = 1234567890;
       nx                            = columnWidth;
       ny                            = columnHeight;
