@@ -40,7 +40,7 @@ displayPeriod   = 250;
 columnWidth      = 32;
 columnHeight     = 32;
 
-inputTrainFiles = 50000;
+inputTrainFiles = 20000;
 inputTestFiles  = 10000;
 
 unsupervisedEpochs = 1;

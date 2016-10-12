@@ -3,7 +3,7 @@
 ------------
 
 local nbatch       = 8;
-local learningRate = 0.001;
+local learningRate = 0.01;
 
 -- This file requires the global variables:
 --    numCategories,
