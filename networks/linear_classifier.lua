@@ -103,6 +103,15 @@ pv.addGroup(pvClassifier, "GroundTruthToEstimateError", {
       }
    );
 
+pv.addGroup(pvClassifier, "CategoryEstimateToEstimateError", {
+         groupType     = "IdentConn";
+         channelCode   = 1;
+         preLayerName  = "CategoryEstimate";
+         postLayerName = "EstimateError";
+      }
+   );
+
+
 for index, layerName in pairs(layersToClassify) do
    pv.addGroup(pvClassifier, layerName .. "ToEstimateError", {
             groupType       = "HyPerConn";
@@ -122,7 +131,7 @@ for index, layerName in pairs(layersToClassify) do
 
    pv.addGroup(pvClassifier, layerName .. "ToCategoryEstimate", {
             groupType        = "CloneConn";
-            channelCode      = 1;
+            channelCode      = 0;
             postLayerName    = "CategoryEstimate";
             writeStep        = -1;
             initialWriteTime = -1;
