@@ -291,7 +291,7 @@ for k, v in pairs(params) do
    if v.plasticityFlag == true then
       v.plasticityFlag   = false;
       v.weightInitType   = "FileWeight";
-      v.initWeightsFile  = runName .. "/weights/" .. k .. ".pvp";
+      v.initWeightsFile  = "weights/" .. k .. ".pvp";
       v.initialWriteTime = -1;
       v.writeStep        = -1;
    end
