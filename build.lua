@@ -152,7 +152,7 @@ end
 if generateGroundTruth then
    params["GroundTruth"] = {
          groupType         = "FilenameParsingGroundTruthLayer";
-         phase             = params[ inputLayerNames[1] ].phase + 1;
+         phase             = params[ inputLayerNames[1] ].phase - 1;
          nxScale           = 1 / params.column.nx;
          nyScale           = 1 / params.column.ny;
          nf                = numCategories;

@@ -58,7 +58,7 @@ pv.addGroup(pvParams, "Image",  {
          nxScale                = 1;
          nyScale                = 1;
          nf                     = inputFeatures;
-         phase                  = 0;
+         phase                  = 1;
          writeStep              = -1;
          initialWriteTime       = -1;
          offsetAnchor           = "tl";
@@ -77,7 +77,7 @@ pv.addGroup(pvParams, "ImageReconS1Error", {
          nxScale          = 1;
          nyScale          = 1;
          nf               = inputFeatures;
-         phase            = 1;
+         phase            = 2;
          writeStep        = -1;
          initialWriteTime = -1;
       }
@@ -88,7 +88,7 @@ pv.addGroup(pvParams, "S1", {
          nxScale                = 1/stride;
          nyScale                = 1/stride;
          nf                     = dictionarySize;
-         phase                  = 2;
+         phase                  = 3;
          InitVType              = "ConstantV";
          valueV                 = VThresh;
          triggerLayerName       = NULL;
@@ -112,7 +112,7 @@ pv.addGroup(pvParams, "ImageReconS1",  {
          nxScale          = 1;
          nyScale          = 1;
          nf               = inputFeatures;
-         phase            = 3;
+         phase            = 4;
          InitVType        = "ZeroV";
          triggerLayerName = NULL;
          writeStep        = -1;
