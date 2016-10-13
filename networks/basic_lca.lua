@@ -61,7 +61,7 @@ pv.addGroup(pvParams, "Image",  {
          phase                  = 1;
          writeStep              = -1;
          initialWriteTime       = -1;
-         offsetAnchor           = "tl";
+         offsetAnchor           = "cc";
          inverseFlag            = false;
          normalizeLuminanceFlag = true;
          normalizeStdDev        = true;
