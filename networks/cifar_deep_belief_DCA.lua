@@ -3,8 +3,6 @@
 ------------
 
 local useGpu           = true;
-local inputWidth       = 32;
-local inputHeight      = 32;
 local inputFeatures    = 3;
 local tiers            = 4;
 local patchSize        = {5,    6,    6,    8};  
@@ -45,8 +43,8 @@ local pvParams = {
          dt                          = 1;
          progressInterval            = 10;
          randomSeed                  = 1234567890;
-         nx                          = inputWidth;
-         ny                          = inputHeight;
+         nx                          = columnWidth;
+         ny                          = columnHeight;
          nbatch                      = nbatch;
          checkpointWrite             = true;
          checkpointWriteTriggerMode  = "step";
@@ -392,8 +390,8 @@ for i_tier = 1, tiers do
                   lcaLayerName .. "To" .. errorDCALayerName,
 		  pvParams[lcaLayerName .. "To" .. errorLayerName], {
 		     postLayerName = errorDCALayerName;
-		     nxp           = inputWidth / (stride[i_tier - 2]);
-		     nyp           = inputHeight / (stride[i_tier - 2]);
+		     nxp           = columnWidth / (stride[i_tier - 2]);
+		     nyp           = columnHeight / (stride[i_tier - 2]);
 		  }
                );
       pvParams[lcaLayerName
