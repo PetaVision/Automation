@@ -2,6 +2,7 @@
 -- Params --
 ------------
 
+
 local useGpu           = true;
 local inputFeatures    = 3;
 local nbatch           = 20;
@@ -14,9 +15,12 @@ local overcompleteness = 1;
 local momentumTau      = 200;
 local dWMax            = 10;
 local VThresh          = 0.015;
+if globalVThresh ~= nil then
+   VThresh = globalVThresh;
+end
 local AMin             = 0;
 local AMax             = infinity;
-local AShift           = 0.015;
+local AShift           = 0;
 local VWidth           = 0; 
 local timeConstantTau  = displayPeriod / 5;
 local weightInit       = math.sqrt((1/patchSize)*(1/patchSize)*(1/inputFeatures));
