@@ -61,7 +61,7 @@ pv.addGroup(pvClassifier, "CategoryEstimate", {
          nxScale          = 1 / columnWidth;
          nyScale          = 1 / columnHeight;
          nf               = numCategories;
-         phase            = 2;
+         phase            = 3;
          writeStep        = -1;
          initialWriteTime = -1;
       }
@@ -72,7 +72,7 @@ pv.addGroup(pvClassifier, "HiddenError", {
          nxScale          = 1 / columnWidth;
          nyScale          = 1 / columnHeight;
          nf               = hiddenFeatures;
-         phase            = 2;
+         phase            = 5;
          writeStep        = -1;
          initialWriteTime = -1;
          maskLayerName    = "Hidden";
@@ -100,7 +100,7 @@ pv.addGroup(pvClassifier, "EstimateError", {
          nxScale          = 1 / columnWidth;
          nyScale          = 1 / columnHeight;
          nf               = numCategories;
-         phase            = 3;
+         phase            = 4;
          writeStep        = -1;
          initialWriteTime = -1;
       }
@@ -152,6 +152,46 @@ pv.addGroup(pvClassifier, "CategoryEstimateToEstimateError", {
       }
    );
 
+pv.addGroup(pvClassifier, "HiddenToEstimateError", {
+         groupType       = "HyPerConn";
+         channelCode     = -1;
+         preLayerName    = "Hidden";
+         postLayerName   = "EstimateError";
+         plasticityFlag  = true;
+         nxp             = 1;
+         nyp             = 1;
+         nfp             = numCategories;
+         dWMax           = learningRate;
+         weightInitType  = "UniformRandomWeight";
+         wMinInit        = -0.01;
+         wMaxInit        = 0.01;
+         normalizeMethod = "none";
+      }
+   );
+
+pv.addGroup(pvClassifier, "HiddenToCategoryEstimate", {
+         groupType        = "CloneConn";
+         channelCode      = 0;
+         preLayerName     = "Hidden";
+         postLayerName    = "CategoryEstimate";
+         writeStep        = -1;
+         initialWriteTime = -1;
+         originalConnName = "HiddenToEstimateError";
+      }
+   );
+
+pv.addGroup(pvClassifier, "EstimateErrorToHiddenError", {
+         groupType        = "TransposeConn";
+         channelCode      = 0;
+         preLayerName     = "EstimateError";
+         postLayerName    = "HiddenError";
+         writeStep        = -1;
+         initialWriteTime = -1;
+         originalConnName = "HiddenToEstimateError";
+      }
+   );
+
+
 
 for index, layerName in pairs(layersToClassify) do
    local maxPoolLayerName = layerName .. "MaxPool";
@@ -169,15 +209,15 @@ for index, layerName in pairs(layersToClassify) do
          }
       );
 
-   pv.addGroup(pvClassifier, maxPoolLayerName .. "ToEstimateError", {
+   pv.addGroup(pvClassifier, maxPoolLayerName .. "ToHiddenError", {
             groupType       = "HyPerConn";
             channelCode     = -1;
             preLayerName    = maxPoolLayerName;
-            postLayerName   = "EstimateError";
+            postLayerName   = "HiddenError";
             plasticityFlag  = true;
             nxp             = 1;
             nyp             = 1;
-            nfp             = numCategories;
+            nfp             = hiddenFeatures;
             dWMax           = learningRate;
             weightInitType  = "UniformRandomWeight";
             wMinInit        = -0.01;
@@ -186,14 +226,14 @@ for index, layerName in pairs(layersToClassify) do
          }
       );
 
-   pv.addGroup(pvClassifier, maxPoolLayerName .. "ToCategoryEstimate", {
+   pv.addGroup(pvClassifier, maxPoolLayerName .. "ToHidden", {
             groupType        = "CloneConn";
             channelCode      = 0;
             preLayerName     = maxPoolLayerName;
-            postLayerName    = "CategoryEstimate";
+            postLayerName    = "Hidden";
             writeStep        = -1;
             initialWriteTime = -1;
-            originalConnName = maxPoolLayerName .. "ToEstimateError";
+            originalConnName = maxPoolLayerName .. "ToHiddenError";
          }
       );
 end
