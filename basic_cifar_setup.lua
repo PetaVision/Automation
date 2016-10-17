@@ -30,11 +30,11 @@ numClassCols     = 1;
 -- at the end. This script expects the network params
 -- file to use the table params.
 paramsFile = "networks/basic_lca.lua";
-classifier = "networks/linear_classifier.lua";
+classifier = "networks/maxpool_linear_classifier.lua";
 
 -- Global Configuration
 runVersion = 1;
-runName    = "cifar_demo_" .. runVersion;
+runName    = "cifar_maxpool_demo_" .. runVersion;
 
 displayPeriod   = 250;
 columnWidth      = 32;

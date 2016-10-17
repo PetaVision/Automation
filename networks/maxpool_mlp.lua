@@ -2,10 +2,11 @@
 -- Params --
 ------------
 
-local maxPoolX     = 4;
-local maxPoolY     = 4;
-local nbatch       = 8;
-local learningRate = 0.001;
+local maxPoolX       = 4;
+local maxPoolY       = 4;
+local nbatch         = 8;
+local learningRate   = 0.001;
+local hiddenFeatures = 1024;
 
 -- This file requires the global variables:
 --    numCategories,
