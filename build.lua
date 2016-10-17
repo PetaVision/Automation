@@ -1,3 +1,6 @@
+-- Pass the arguments -nosparse or -noclassify on the command line to skip
+-- those runs. Pass both to only generate project files, but not run.
+
 -- Create directories for each run and their results
 local paramsDir = runName .. "/params/";
 local runsDir   = runName .. "/runs/";
@@ -328,4 +331,23 @@ print("---------------------------------------\n");
 print("  Finished generating " .. runName .. "\n");
 print("---------------------------------------\n");
 
-dofile("run.lua");
+local doSparse   = true;
+local doClassify = true;
+
+for k, v in pairs(arg) do
+   if k > 0 and v == "-nosparse" then
+      doSparse = false;
+   end
+
+   if k > 0 and v == "-noclassify" then
+      doClassify = false;
+   end
+end
+
+if doSparse then
+   dofile("run_sparse.lua");
+end
+
+if doClassify then
+   dofile("run_classify.lua");
+end

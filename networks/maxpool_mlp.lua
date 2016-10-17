@@ -8,6 +8,9 @@ local nbatch         = 8;
 local learningRate   = 0.001;
 local hiddenFeatures = 1024;
 
+
+-- TODO: Correct phase
+
 -- This file requires the global variables:
 --    numCategories,
 --    columnWidth
@@ -61,6 +64,34 @@ pv.addGroup(pvClassifier, "CategoryEstimate", {
          phase            = 2;
          writeStep        = -1;
          initialWriteTime = -1;
+      }
+   );
+
+pv.addGroup(pvClassifier, "HiddenError", {
+         groupType        = "MaskLayer";
+         nxScale          = 1 / columnWidth;
+         nyScale          = 1 / columnHeight;
+         nf               = hiddenFeatures;
+         phase            = 2;
+         writeStep        = -1;
+         initialWriteTime = -1;
+         maskLayerName    = "Hidden";
+         maskMethod       = "layer";
+      }
+   );
+
+pv.addGroup(pvClassifier, "Hidden", {
+         groupType        = "ANNLayer";
+         nxScale          = 1 / columnWidth;
+         nyScale          = 1 / columnHeight;
+         nf               = hiddenFeatures;
+         phase            = 2;
+         writeStep        = -1;
+         initialWriteTime = -1;
+         VThresh          = 0;
+         AMin             = 0;
+         AMax             = infinity;
+         AShift           = 0;
       }
    );
 
