@@ -54,10 +54,10 @@ inputLayerNames = {
       "Image"
    }; 
 inputTrainLists = {
-      "/home/athresher/workspace/input/cifar/mixed_cifar.txt"
+      "/shared/cifar-10-batches-mat/mixed_cifar.txt"
    };
 inputTestLists  = {
-      "/home/athresher/workspace/input/cifar/test_batch_randorder.txt"
+      "/shared/cifar-10-batches-mat/test_batch_randorder.txt"
    };
 
 -- The layer names listed here will be written to disk and
