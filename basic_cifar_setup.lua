@@ -30,7 +30,7 @@ numClassCols     = 1;
 -- at the end. This script expects the network params
 -- file to use the table params.
 paramsFile = "networks/basic_lca.lua";
-classifier = "networks/maxpool_linear_classifier.lua";
+classifier = "networks/maxpool_mlp.lua";
 
 -- Global Configuration
 runVersion = 1;
