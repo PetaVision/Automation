@@ -6,7 +6,7 @@ local maxPoolX       = 4;
 local maxPoolY       = 4;
 local nbatch         = 1;
 local learningRate   = 0.001;
-local hiddenFeatures = 64;
+local hiddenFeatures = 256;
 local useGpu         = true;
 
 -- TODO: Correct phase
@@ -176,8 +176,8 @@ pv.addGroup(pvClassifier, "BiasToEstimateError", {
          nfp             = numCategories;
          dWMax           = learningRate / 10;
          weightInitType  = "UniformRandomWeight";
-         wMinInit        = -0.00001;
-         wMaxInit        = 0.00001;
+         wMinInit        = -0.0001;
+         wMaxInit        = 0.0001;
          normalizeMethod = "none";
       }
    );
@@ -204,8 +204,8 @@ pv.addGroup(pvClassifier, "HiddenToEstimateError", {
          nfp             = numCategories;
          dWMax           = learningRate;
          weightInitType  = "UniformRandomWeight";
-         wMinInit        = -0.001;
-         wMaxInit        = 0.001;
+         wMinInit        = -0.01;
+         wMaxInit        = 0.01;
          normalizeMethod = "normalizeL2";
          strength        = 1;
       }
@@ -264,8 +264,8 @@ for index, layerName in pairs(layersToClassify) do
             dWMax           = learningRate;
             sharedWeights   = false;
             weightInitType  = "UniformRandomWeight";
-            wMinInit        = -0.001;
-            wMaxInit        = 0.001;
+            wMinInit        = -0.01;
+            wMaxInit        = 0.01;
             normalizeMethod = "normalizeL2";
             strength        = 1;
          }
