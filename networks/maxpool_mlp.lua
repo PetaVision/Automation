@@ -5,9 +5,9 @@
 local maxPoolX       = 4;
 local maxPoolY       = 4;
 local nbatch         = 8;
-local learningRate   = 0.001;
-local hiddenFeatures = 1024;
-
+local learningRate   = 0.0001;
+local hiddenFeatures = 128;
+local useGpu         = true;
 
 -- TODO: Correct phase
 
@@ -202,6 +202,7 @@ for index, layerName in pairs(layersToClassify) do
             preLayerName          = layerName;
             postLayerName         = maxPoolLayerName;
             pvpatchAccumulateType = "maxpooling";
+            receiveGpu            = useGpu;
             writeStep             = -1;
             nxp                   = 1;
             nyp                   = 1;

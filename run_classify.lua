@@ -16,13 +16,9 @@ os.execute(cdPre .. mpiPreClass .. pathToBinary
            .. " -t " .. numClassThreads .. mpiPostClass);
 
 -- Copy learned weights
-for index, layerName in pairs(layersToClassify) do
-   local fileName = layerName .. "ToEstimateError";
-   print("Copying " .. fileName .. "\n");
-   os.execute("cp "
-         .. runName .. "/runs/trainclassify/" .. fileName .. ".pvp "
-         .. runName .. "/weights");
-end
+os.execute("cp "
+      .. runName .. "/runs/trainclassify/*.pvp "
+      .. runName .. "/weights");
 
 -- Run test classifier
 os.execute(cdPre .. mpiPreClass .. pathToBinary

@@ -16,12 +16,12 @@ pathToSource =
       .. "/workspace/OpenPV";
 
 -- Threads / Rows / Columns for sparse coding
-numSparseThreads = 8;
+numSparseThreads = 6;
 numSparseRows    = 2;
 numSparseCols    = 2;
 
 -- Threads / Rows / Columns for classifier
-numClassThreads  = 32;
+numClassThreads  = 24;
 numClassRows     = 1;
 numClassCols     = 1;
 
@@ -44,7 +44,7 @@ inputTrainFiles = 20000;
 inputTestFiles  = 10000;
 
 unsupervisedEpochs = 1;
-classifierEpochs   = 50;
+classifierEpochs   = 100;
 
 debugParsing = false;
 
