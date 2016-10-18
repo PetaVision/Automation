@@ -4,9 +4,9 @@
 
 local maxPoolX       = 4;
 local maxPoolY       = 4;
-local nbatch         = 8;
-local learningRate   = 0.0001;
-local hiddenFeatures = 128;
+local nbatch         = 1;
+local learningRate   = 0.001;
+local hiddenFeatures = 64;
 local useGpu         = true;
 
 -- TODO: Correct phase
@@ -61,6 +61,19 @@ pv.addGroup(pvClassifier, "CategoryEstimate", {
          nxScale          = 1 / columnWidth;
          nyScale          = 1 / columnHeight;
          nf               = numCategories;
+         phase            = 3;
+         writeStep        = -1;
+         initialWriteTime = -1;
+      }
+   );
+
+pv.addGroup(pvClassifier, "Bias", {
+         groupType        = "ConstantLayer";
+         nxScale          = 1 / columnWidth;
+         nyScale          = 1 / columnHeight;
+         nf               = numCategories;
+         initV            = "ConstantV";
+         valueV           = 1.0;
          phase            = 3;
          writeStep        = -1;
          initialWriteTime = -1;
@@ -152,6 +165,34 @@ pv.addGroup(pvClassifier, "CategoryEstimateToEstimateError", {
       }
    );
 
+pv.addGroup(pvClassifier, "BiasToEstimateError", {
+         groupType       = "HyPerConn";
+         channelCode     = -1;
+         preLayerName    = "Bias";
+         postLayerName   = "EstimateError";
+         plasticityFlag  = true;
+         nxp             = 1;
+         nyp             = 1;
+         nfp             = numCategories;
+         dWMax           = learningRate / 10;
+         weightInitType  = "UniformRandomWeight";
+         wMinInit        = -0.00001;
+         wMaxInit        = 0.00001;
+         normalizeMethod = "none";
+      }
+   );
+
+pv.addGroup(pvClassifier, "BiasToCategoryEstimate", {
+         groupType        = "CloneConn";
+         channelCode      = 0;
+         preLayerName     = "Bias";
+         postLayerName    = "CategoryEstimate";
+         writeStep        = -1;
+         initialWriteTime = -1;
+         originalConnName = "BiasToEstimateError";
+      }
+   );
+
 pv.addGroup(pvClassifier, "HiddenToEstimateError", {
          groupType       = "HyPerConn";
          channelCode     = -1;
@@ -163,9 +204,10 @@ pv.addGroup(pvClassifier, "HiddenToEstimateError", {
          nfp             = numCategories;
          dWMax           = learningRate;
          weightInitType  = "UniformRandomWeight";
-         wMinInit        = -0.01;
-         wMaxInit        = 0.01;
-         normalizeMethod = "none";
+         wMinInit        = -0.001;
+         wMaxInit        = 0.001;
+         normalizeMethod = "normalizeL2";
+         strength        = 1;
       }
    );
 
@@ -220,10 +262,12 @@ for index, layerName in pairs(layersToClassify) do
             nyp             = 1;
             nfp             = hiddenFeatures;
             dWMax           = learningRate;
+            sharedWeights   = false;
             weightInitType  = "UniformRandomWeight";
-            wMinInit        = -0.01;
-            wMaxInit        = 0.01;
-            normalizeMethod = "none";
+            wMinInit        = -0.001;
+            wMaxInit        = 0.001;
+            normalizeMethod = "normalizeL2";
+            strength        = 1;
          }
       );
 
