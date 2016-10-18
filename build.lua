@@ -25,7 +25,8 @@ os.execute("mkdir -p " .. runsDir .. "testclassify");
 os.execute("cp " .. debug.getinfo(1).short_src .. " " .. luaDir);
 os.execute("cp " .. paramsFile .. " " .. luaDir);
 os.execute("cp " .. classifier .. " " .. luaDir);
-os.execute("cp run.lua " .. runName .. "/.");
+os.execute("cp run_sparse.lua " .. runName .. "/.");
+os.execute("cp run_classify.lua " .. runName .. "/.");
 
 -- Generate our classes.txt
 if generateGroundTruth then
