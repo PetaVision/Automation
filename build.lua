@@ -79,6 +79,7 @@ params.column.stopTime =
 for index, layerName in pairs(inputLayerNames) do
    params[layerName].displayPeriod = displayPeriod;
    params[layerName].inputPath     = inputTrainLists[index]; 
+   params[layerName].batchMethod = "random";
 end
 
 for index, layerName in pairs(layersToClassify) do
@@ -150,6 +151,10 @@ for k, v in pairs(params) do
       v.initialWriteTime = -1;
       v.writeStep        = -1;
    end
+end
+
+for index, layerName in pairs(inputLayerNames) do
+   params[layerName].batchMethod = "byFile";
 end
 
 if generateGroundTruth then
@@ -303,10 +308,12 @@ end
 for index, layerName in pairs(layersToClassify) do
    params[layerName].inputPath = "sparse/test/"
                                  .. layerName .. ".pvp";
+   params[layerName].batchMethod = "byFile";
 end
 
 params.CategoryEstimate.writeStep        = 1;
 params.CategoryEstimate.initialWriteTime = 1;
+--params.CategoryEstimate.groupType        = "HyPerLayer"; -- Required if clamping
 params.GroundTruth.inputPath             = "groundtruth/test_gt.pvp";
 
 -- Write the file and run it through PV with the dry run flag

@@ -4,9 +4,9 @@
 
 local maxPoolX       = 4;
 local maxPoolY       = 4;
-local nbatch         = 1;
-local learningRate   = 0.001;
-local hiddenFeatures = 256;
+local nbatch         = 8;
+local learningRate   = 0.0001;
+local hiddenFeatures = 256
 local useGpu         = true;
 
 -- TODO: Correct phase
@@ -43,27 +43,18 @@ local pvClassifier = {
 -- Layers --
 ------------
 
-pv.addGroup(pvClassifier, "GroundTruth", {
-         groupType        = "PvpLayer";
-         nxScale          = 1 / columnWidth;
-         nyScale          = 1 / columnHeight;
-         nf               = numCategories;
-         phase            = 0;
-         displayPeriod    = 1;
-         batchMethod      = "byFile";
-         writeStep        = -1;
-         initialWriteTime = -1;
-      }
-   );
-
 pv.addGroup(pvClassifier, "CategoryEstimate", {
-         groupType        = "HyPerLayer";
+         groupType        = "HyPerLayer";--"ANNLayer";
          nxScale          = 1 / columnWidth;
          nyScale          = 1 / columnHeight;
          nf               = numCategories;
          phase            = 3;
          writeStep        = -1;
          initialWriteTime = -1;
+         -- VThresh          = 0;
+         -- AMin             = 0;
+         -- AMax             = 1;
+         -- AShift           = 0;
       }
    );
 
@@ -119,6 +110,20 @@ pv.addGroup(pvClassifier, "EstimateError", {
       }
    );
 
+pv.addGroup(pvClassifier, "GroundTruth", {
+         groupType        = "PvpLayer";
+         nxScale          = 1 / columnWidth;
+         nyScale          = 1 / columnHeight;
+         nf               = numCategories;
+         phase            = 0;
+         displayPeriod    = 1;
+         batchMethod      = "random";
+         randomSeed       = 5;
+         writeStep        = -1;
+         initialWriteTime = -1;
+      }
+   );
+
 for index, layerName in pairs(layersToClassify) do
    pv.addGroup(pvClassifier, layerName, {
             groupType        = "PvpLayer";
@@ -127,9 +132,11 @@ for index, layerName in pairs(layersToClassify) do
             nf               = layersToClassifyFeatures[layerName];
             phase            = 0;
             displayPeriod    = 1;
-            batchMethod      = "byFile";
+            batchMethod      = "random";
+            randomSeed       = 5;
             writeStep        = -1;
             initialWriteTime = -1;
+            resetToStartOnLoop = false;
          }
       );
 
@@ -141,6 +148,7 @@ for index, layerName in pairs(layersToClassify) do
             phase            = 1;
             writeStep        = -1;
             initialWriteTime = -1;
+            resetToStartOnLoop = false;
          }
       );
 end
@@ -178,7 +186,8 @@ pv.addGroup(pvClassifier, "BiasToEstimateError", {
          weightInitType  = "UniformRandomWeight";
          wMinInit        = -0.0001;
          wMaxInit        = 0.0001;
-         normalizeMethod = "none";
+         normalizeMethod = "normalizeL2";
+         strength        = 1;
       }
    );
 
@@ -262,7 +271,6 @@ for index, layerName in pairs(layersToClassify) do
             nyp             = 1;
             nfp             = hiddenFeatures;
             dWMax           = learningRate;
-            sharedWeights   = false;
             weightInitType  = "UniformRandomWeight";
             wMinInit        = -0.01;
             wMaxInit        = 0.01;

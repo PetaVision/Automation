@@ -40,10 +40,10 @@ displayPeriod   = 250;
 columnWidth      = 32;
 columnHeight     = 32;
 
-inputTrainFiles = 20000;
+inputTrainFiles = 50000;
 inputTestFiles  = 10000;
 
-unsupervisedEpochs = 1;
+unsupervisedEpochs = 5;
 classifierEpochs   = 100;
 
 debugParsing = false;
