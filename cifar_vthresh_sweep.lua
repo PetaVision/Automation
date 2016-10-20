@@ -16,10 +16,10 @@ pathToSource =
       .. "/workspace/OpenPV";
 
 -- Global Configuration
-globalVThresh = 0.0025;
+globalVThresh = 0.005;
 runVersion    = 1;
 
-for v = 1,10 do
+for v = 1,8 do
 
    print("************************************************");
    print("*  STARTING SWEEP ITERATION " .. runVersion);
@@ -40,12 +40,12 @@ for v = 1,10 do
    -- at the end. This script expects the network params
    -- file to use the table params.
    paramsFile = "networks/basic_lca.lua";
-   classifier = "networks/linear_classifier.lua";
+   classifier = "networks/maxpool_mlp.lua";
 
    runVersion    = v;
    runName       = "cifar_vthresh_sweep_" .. runVersion;
 
-   globalVThresh = globalVThresh * 2;
+   globalVThresh = globalVThresh + 0.005;
    displayPeriod = 500;
    columnWidth   = 32;
    columnHeight  = 32;
@@ -54,7 +54,7 @@ for v = 1,10 do
    inputTestFiles  = 10000;
 
    unsupervisedEpochs = 1;
-   classifierEpochs   = 50;
+   classifierEpochs   = 100;
 
    debugParsing = false;
 
