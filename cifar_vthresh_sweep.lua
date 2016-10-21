@@ -53,8 +53,8 @@ for v = 1,8 do
    inputTrainFiles = 50000;
    inputTestFiles  = 10000;
 
-   unsupervisedEpochs = 1;
-   classifierEpochs   = 100;
+   unsupervisedEpochs = 3;
+   classifierEpochs   = 200;
 
    debugParsing = false;
 

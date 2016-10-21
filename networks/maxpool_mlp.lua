@@ -2,11 +2,11 @@
 -- Params --
 ------------
 
-local maxPoolX       = 4;
-local maxPoolY       = 4;
+local maxPoolX       = 8;
+local maxPoolY       = 8;
 local nbatch         = 8;
 local learningRate   = 0.0001;
-local hiddenFeatures = 256
+local hiddenFeatures = 512; 
 local useGpu         = true;
 
 -- TODO: Correct phase
@@ -35,7 +35,7 @@ local pvClassifier = {
       nbatch                     = nbatch;
       checkpointWrite            = true;
       checkpointWriteTriggerMode = "step";
-      deleteOlderCheckpoints     = true;
+      deleteOlderCheckpoints     = false;
    }
 };
 

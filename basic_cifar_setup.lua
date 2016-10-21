@@ -44,7 +44,7 @@ inputTrainFiles = 50000;
 inputTestFiles  = 10000;
 
 unsupervisedEpochs = 5;
-classifierEpochs   = 100;
+classifierEpochs   = 200;
 
 debugParsing = false;
 
