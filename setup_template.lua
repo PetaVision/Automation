@@ -25,6 +25,8 @@ numClassThreads  = 32;
 numClassRows     = 1;
 numClassCols     = 1;
 
+mpiBatchWidth    = 1;
+
 -- The network params file should use the values below.
 -- The params file should *not* call pv.printConsole()
 -- at the end. This script expects the network params
