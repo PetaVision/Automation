@@ -2,10 +2,10 @@
 -- Params --
 ------------
 
-local maxPoolX       = 8;
-local maxPoolY       = 8;
-local nbatch         = 8;
-local learningRate   = 0.0001;
+local maxPoolX       = 2;
+local maxPoolY       = 2;
+local nbatch         = numClassBatches;
+local learningRate   = 0.001;
 local hiddenFeatures = 512; 
 local useGpu         = true;
 

@@ -38,9 +38,23 @@ if generateGroundTruth then
       numCategories = numCategories + 1;
    end
    io.close(classesFile);
-   os.execute("cp "
-         .. runsDir .. "writetrain/classes.txt "
-         .. runsDir .. "writetest/classes.txt");
+   if mpiBatchWidth > 1 then
+      for mpiIndex = 0, mpiBatchWidth-1 do
+         local batchPath = string.format("batchsweep_%02d/", mpiIndex);
+         os.execute("mkdir -p " .. runsDir .. "writetrain/" .. batchPath);
+         os.execute("mkdir -p " .. runsDir .. "writetest/" .. batchPath);
+         os.execute("cp "
+               .. runsDir .. "writetrain/classes.txt "
+               .. runsDir .. "writetest/" .. batchPath);
+         os.execute("cp "
+               .. runsDir .. "writetrain/classes.txt "
+               .. runsDir .. "writetrain/" .. batchPath);
+      end
+   else
+      os.execute("cp "
+            .. runsDir .. "writetrain/classes.txt "
+            .. runsDir .. "writetest/classes.txt");
+   end
 end
 
 -- Add the PetaVision source directory to the package path
