@@ -5,7 +5,7 @@
 local maxPoolX       = 4;
 local maxPoolY       = 4;
 local nbatch         = numClassBatches;
-local learningRate   = 0.0001;
+local learningRate   = 0.001;
 local hiddenFeatures = 128; 
 local useGpu         = true;
 
@@ -41,6 +41,19 @@ local pvClassifier = {
 -- Layers --
 ------------
 
+--pv.addGroup(pvClassifier, "SoftmaxEstimate", {
+--         groupType        = "RescaleLayer";
+--         nxScale          = 1 / columnWidth;
+--         nyScale          = 1 / columnHeight;
+--         nf               = numCategories;
+--         phase            = 4;
+--         writeStep        = -1;
+--         initialWriteTime = -1;
+--         rescaleMethod    = "softmax";
+--         originalLayerName = "CategoryEstimate";
+--      }
+--   );
+
 pv.addGroup(pvClassifier, "CategoryEstimate", {
          groupType        = "HyPerLayer";
          nxScale          = 1 / columnWidth;
@@ -65,40 +78,12 @@ pv.addGroup(pvClassifier, "Bias", {
       }
    );
 
-pv.addGroup(pvClassifier, "HiddenError", {
-         groupType        = "MaskLayer";
-         nxScale          = 1 / columnWidth;
-         nyScale          = 1 / columnHeight;
-         nf               = hiddenFeatures;
-         phase            = 5;
-         writeStep        = -1;
-         initialWriteTime = -1;
-         maskLayerName    = "Hidden";
-         maskMethod       = "layer";
-      }
-   );
-
-pv.addGroup(pvClassifier, "Hidden", {
-         groupType        = "ANNLayer";
-         nxScale          = 1 / columnWidth;
-         nyScale          = 1 / columnHeight;
-         nf               = hiddenFeatures;
-         phase            = 2;
-         writeStep        = -1;
-         initialWriteTime = -1;
-         VThresh          = 0;
-         AMin             = 0;
-         AMax             = infinity;
-         AShift           = 0;
-      }
-   );
-
 pv.addGroup(pvClassifier, "EstimateError", {
          groupType        = "HyPerLayer";
          nxScale          = 1 / columnWidth;
          nyScale          = 1 / columnHeight;
          nf               = numCategories;
-         phase            = 4;
+         phase            = 5;
          writeStep        = -1;
          initialWriteTime = -1;
       }
@@ -131,6 +116,8 @@ for index, layerName in pairs(layersToClassify) do
             writeStep        = -1;
             initialWriteTime = -1;
             resetToStartOnLoop = false;
+            normalizeLuminanceFlag = true;
+            normalizeStdDev = false;
          }
       );
 
@@ -145,6 +132,35 @@ for index, layerName in pairs(layersToClassify) do
             resetToStartOnLoop = false;
          }
       );
+
+   pv.addGroup(pvClassifier, layerName .. "HiddenError", {
+            groupType        = "MaskLayer";
+            nxScale          = maxPoolX / columnWidth;
+            nyScale          = maxPoolY / columnHeight;
+            nf               = hiddenFeatures;
+            phase            = 6;
+            writeStep        = -1;
+            initialWriteTime = -1;
+            maskLayerName    = layerName .. "Hidden";
+            maskMethod       = "layer";
+         }
+      );
+
+   pv.addGroup(pvClassifier, layerName .. "Hidden", {
+            groupType        = "ANNLayer";
+            nxScale          = maxPoolX / columnWidth;
+            nyScale          = maxPoolY / columnHeight;
+            nf               = hiddenFeatures;
+            phase            = 2;
+            writeStep        = -1;
+            initialWriteTime = -1;
+            VThresh          = 0;
+            AMin             = 0;
+            AMax             = infinity;
+            AShift           = 0;
+         }
+      );
+
 end
 
 -----------------
@@ -159,10 +175,11 @@ pv.addGroup(pvClassifier, "GroundTruthToEstimateError", {
       }
    );
 
+--pv.addGroup(pvClassifier, "SoftmaxEstimateToEstimateError", {
 pv.addGroup(pvClassifier, "CategoryEstimateToEstimateError", {
          groupType     = "IdentConn";
          channelCode   = 1;
-         preLayerName  = "CategoryEstimate";
+         preLayerName  = "CategoryEstimate"; --"SoftmaxEstimate";
          postLayerName = "EstimateError";
       }
    );
@@ -196,51 +213,51 @@ pv.addGroup(pvClassifier, "BiasToCategoryEstimate", {
       }
    );
 
-pv.addGroup(pvClassifier, "HiddenToEstimateError", {
-         groupType       = "HyPerConn";
-         channelCode     = -1;
-         preLayerName    = "Hidden";
-         postLayerName   = "EstimateError";
-         plasticityFlag  = true;
-         nxp             = 1;
-         nyp             = 1;
-         nfp             = numCategories;
-         dWMax           = learningRate;
-         weightInitType  = "UniformRandomWeight";
-         wMinInit        = -0.01;
-         wMaxInit        = 0.01;
-         normalizeMethod = "normalizeL2";
-         strength        = 1;
-         receiveGpu      = useGpu;
-      }
-   );
-
-pv.addGroup(pvClassifier, "HiddenToCategoryEstimate", {
-         groupType        = "CloneConn";
-         channelCode      = 0;
-         preLayerName     = "Hidden";
-         postLayerName    = "CategoryEstimate";
-         writeStep        = -1;
-         initialWriteTime = -1;
-         originalConnName = "HiddenToEstimateError";
-      }
-   );
-
-pv.addGroup(pvClassifier, "EstimateErrorToHiddenError", {
-         groupType        = "TransposeConn";
-         channelCode      = 0;
-         preLayerName     = "EstimateError";
-         postLayerName    = "HiddenError";
-         writeStep        = -1;
-         initialWriteTime = -1;
-         originalConnName = "HiddenToEstimateError";
-      }
-   );
-
 
 
 for index, layerName in pairs(layersToClassify) do
    local maxPoolLayerName = layerName .. "MaxPool";
+
+   pv.addGroup(pvClassifier, layerName .. "HiddenToEstimateError", {
+            groupType       = "HyPerConn";
+            channelCode     = -1;
+            preLayerName    = layerName .. "Hidden";
+            postLayerName   = "EstimateError";
+            plasticityFlag  = true;
+            nxp             = 1;
+            nyp             = 1;
+            nfp             = numCategories;
+            dWMax           = learningRate;
+            weightInitType  = "UniformRandomWeight";
+            wMinInit        = -0.001;
+            wMaxInit        = 0.001;
+            normalizeMethod = "normalizeL2";
+            strength        = 1;
+            receiveGpu      = useGpu;
+         }
+      );
+
+   pv.addGroup(pvClassifier, layerName .. "HiddenToCategoryEstimate", {
+            groupType        = "CloneConn";
+            channelCode      = 0;
+            preLayerName     = layerName .. "Hidden";
+            postLayerName    = "CategoryEstimate";
+            writeStep        = -1;
+            initialWriteTime = -1;
+            originalConnName = layerName .. "HiddenToEstimateError";
+         }
+      );
+
+   pv.addGroup(pvClassifier, "EstimateErrorTo" .. layerName .. "HiddenError", {
+            groupType        = "TransposeConn";
+            channelCode      = 0;
+            preLayerName     = "EstimateError";
+            postLayerName    = layerName .. "HiddenError";
+            writeStep        = -1;
+            initialWriteTime = -1;
+            originalConnName = layerName .. "HiddenToEstimateError";
+         }
+      );
 
    pv.addGroup(pvClassifier, layerName .. "To" .. maxPoolLayerName, {
             groupType             = "PoolingConn";
@@ -256,33 +273,33 @@ for index, layerName in pairs(layersToClassify) do
          }
       );
 
-   pv.addGroup(pvClassifier, maxPoolLayerName .. "ToHiddenError", {
+   pv.addGroup(pvClassifier, maxPoolLayerName .. "To" .. layerName .. "HiddenError", {
             groupType       = "HyPerConn";
             channelCode     = -1;
             preLayerName    = maxPoolLayerName;
-            postLayerName   = "HiddenError";
+            postLayerName   = layerName .. "HiddenError";
             plasticityFlag  = true;
             nxp             = 1;
             nyp             = 1;
             nfp             = hiddenFeatures;
             dWMax           = learningRate;
             weightInitType  = "UniformRandomWeight";
-            wMinInit        = -0.01;
-            wMaxInit        = 0.01;
+            wMinInit        = -0.001;
+            wMaxInit        = 0.001;
             normalizeMethod = "normalizeL2";
             strength        = 1;
             receiveGpu      = useGpu;
          }
       );
 
-   pv.addGroup(pvClassifier, maxPoolLayerName .. "ToHidden", {
+   pv.addGroup(pvClassifier, maxPoolLayerName .. "To" .. layerName .. "Hidden", {
             groupType        = "CloneConn";
             channelCode      = 0;
             preLayerName     = maxPoolLayerName;
-            postLayerName    = "Hidden";
+            postLayerName    = layerName .. "Hidden";
             writeStep        = -1;
             initialWriteTime = -1;
-            originalConnName = maxPoolLayerName .. "ToHiddenError";
+            originalConnName = maxPoolLayerName .. "To" .. layerName .. "HiddenError";
          }
       );
 end

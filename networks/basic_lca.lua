@@ -10,11 +10,11 @@ local plasticityFlag   = true;
 local checkpointPeriod = displayPeriod * 100;
 local patchSize        = 8;
 local stride           = 2;
-local dictionarySize   = 256;
+local dictionarySize   = 128;
 local overcompleteness = 1;
 local momentumTau      = 200;
 local dWMax            = 1.0; --0.1;
-local VThresh          = 0.015;
+local VThresh          = 0.02;
 if globalVThresh ~= nil then
    VThresh = globalVThresh;
 end

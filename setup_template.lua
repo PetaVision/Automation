@@ -19,13 +19,13 @@ pathToSource =
 numSparseThreads = 2;
 numSparseRows    = 2;
 numSparseCols    = 2;
-numSparseBatches = 8; -- TODO: Make params use this
+numSparseBatches = 20;
 
 -- Threads / Rows / Columns for classifier
-numClassThreads  = 6;
+numClassThreads  = 7;
 numClassRows     = 1;
 numClassCols     = 1;
-numClassBatches  = 8;
+numClassBatches  = 20;
 
 mpiBatchWidth    = 4;
 
@@ -34,21 +34,21 @@ mpiBatchWidth    = 4;
 -- at the end. This script expects the network params
 -- file to use the table params.
 paramsFile = "networks/basic_lca.lua"; --"networks/NETWORK_FILE_HERE.lua";
-classifier = "networks/maxpool_mlp.lua"; --"networks/CLASSIFIER_FILE_HERE.lua";
+classifier = "networks/maxpool_mlp_res.lua"; --"networks/CLASSIFIER_FILE_HERE.lua";
 
 -- Global Configuration
 runVersion = 1;
 runName    = "debug_run"; --"RUN_NAME_HERE_" .. runVersion;
 
-displayPeriod   = 50;
+displayPeriod   = 200;
 columnWidth      = 32;
 columnHeight     = 32;
 
-inputTrainFiles = 5000;
-inputTestFiles  = 1000;
+inputTrainFiles = 50000;
+inputTestFiles  = 10000;
 
 unsupervisedEpochs = 1;
-classifierEpochs   = 10;
+classifierEpochs   = 2000;
 
 debugParsing = false;
 

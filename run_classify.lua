@@ -36,21 +36,9 @@ else
 end
 
 -- Run test classifier
-os.execute(cdPre .. mpiPreClass .. pathToBinary
+os.execute(cdPre .. pathToBinary
            .. " -p params/" .. runName .. "_testclassify.params"
-           .. " -t " .. numClassThreads .. mpiPostClass);
-
-if mpiBatchWidth > 1 then
-   os.execute("octave --eval \""
-         .. "combinebatches('"
-         .. runName .. "/runs/testclassify/', 'CategoryEstimate', "
-         .. numClassBatches .. "', '"
-         .. inputLayerBatchMethods[1] .. "', "
-         .. mpiBatchWidth .. ", "
-         .. inputTestFiles .. ");\"");
-   os.execute("mv CategoryEstimate.pvp "
-               .. runName .. "/runs/testclassify");
-end
+           .. " -t " .. numClassThreads);
 
 -- Run final analysis script
 os.execute("octave --eval \"disp(calc_score('"
