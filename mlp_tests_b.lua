@@ -22,7 +22,7 @@ numSparseCols    = 2;
 numSparseBatches = 20;
 
 -- Threads / Rows / Columns for classifier
-numClassThreads  = 4;
+numClassThreads  = 7;
 numClassRows     = 1;
 numClassCols     = 1;
 numClassBatches  = 20;
@@ -40,15 +40,16 @@ classifier = "networks/maxpool_mlp_res.lua"; --"networks/CLASSIFIER_FILE_HERE.lu
 runVersion = 1;
 runName    = "debug_run"; --"RUN_NAME_HERE_" .. runVersion;
 
-displayPeriod   = 200;
+displayPeriod   = 100; --200;
 columnWidth      = 32;
 columnHeight     = 32;
 
-inputTrainFiles = 50000;
-inputTestFiles  = 10000;
+local augmentation = 3;
+inputTrainFiles = 50000 * augmentation;
+inputTestFiles  = 10000 * augmentation;
 
 unsupervisedEpochs = 1;
-classifierEpochs   = 200;
+classifierEpochs   = 1;
 
 debugParsing = false;
 

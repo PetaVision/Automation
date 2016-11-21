@@ -35,13 +35,22 @@ else
          .. runName .. "/weights");
 end
 
--- Run test classifier
+-- Get score on train set
+os.execute(cdPre .. pathToBinary
+           .. " -p params/" .. runName .. "_scoretrain.params"
+           .. " -t " .. numClassThreads);
+
+-- Get score on test set
 os.execute(cdPre .. pathToBinary
            .. " -p params/" .. runName .. "_testclassify.params"
            .. " -t " .. numClassThreads);
 
 -- Run final analysis script
 os.execute("octave --eval \"disp(calc_score('"
+      .. runName .. "/runs/scoretrain/CategoryEstimate.pvp', '"
+      .. runName .. "/groundtruth/train_gt.pvp'));\" > " .. runName .. "_train_score.txt");
+os.execute("octave --eval \"disp(calc_score('"
       .. runName .. "/runs/testclassify/CategoryEstimate.pvp', '"
-      .. runName .. "/groundtruth/test_gt.pvp'));\" > " .. runName .. "_score.txt");
-os.execute("cat " .. runName .. "_score.txt");
+      .. runName .. "/groundtruth/test_gt.pvp'));\" > " .. runName .. "_test_score.txt");
+os.execute("echo \'TRAIN: \'; cat " .. runName .. "_train_score.txt; "
+        .. "echo \'TEST:  \'; cat " .. runName .. "_test_score.txt");

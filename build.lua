@@ -20,6 +20,7 @@ os.execute("mkdir -p " .. runsDir .. "writetrain");
 os.execute("mkdir -p " .. runsDir .. "writetest");
 os.execute("mkdir -p " .. runsDir .. "trainclassify");
 os.execute("mkdir -p " .. runsDir .. "testclassify");
+os.execute("mkdir -p " .. runsDir .. "scoretrain");
 
 -- Copy the lua files being used into the project for future reference
 os.execute("cp " .. debug.getinfo(1).short_src .. " " .. luaDir);
@@ -168,9 +169,10 @@ for k, v in pairs(params) do
    end
 end
 
-for index, layerName in pairs(inputLayerNames) do
-   params[layerName].batchMethod = "byFile";
-end
+-- Random order shouldn't matter here, right?
+--for index, layerName in pairs(inputLayerNames) do
+--   params[layerName].batchMethod = "byFile";
+--end
 
 if generateGroundTruth then
    params["GroundTruth"] = {
@@ -266,6 +268,8 @@ params.column.checkpointWriteStepInterval =
 params.column.stopTime =
       classifierEpochs * params.column.checkpointWriteStepInterval;
 
+params.column.checkpointWriteStepInterval = params.column.checkpointWriteStepInterval * 10;
+
 for k, v in pairs(params) do
    if params[k].plasticityFlag == true then
       -- Write our plastic connections right at the end of the run
@@ -300,15 +304,15 @@ os.execute(command);
 
 
 -----------------------------------------------------------
--- Fifth run (run classifier on sparse code of test set) --
+-- Fifth run (score classifier on sparse code of train set) --
 -----------------------------------------------------------
 
-suffix = "testclassify";
+suffix = "scoretrain";
 params.column.outputPath          = "runs/" .. suffix;
 params.column.checkpointWriteDir  = params.column.outputPath .. "/checkpoints";
 params.column.printParamsFilename = runName .. "_" .. suffix .. ".params";
 params.column.checkpointWrite     = false;
-params.column.stopTime            = inputTestFiles / params.column.nbatch;
+params.column.stopTime            = inputTrainFiles / params.column.nbatch;
 
 for k, v in pairs(params) do
    if v.plasticityFlag == true then
@@ -319,6 +323,47 @@ for k, v in pairs(params) do
       v.writeStep        = -1;
    end
 end
+
+for index, layerName in pairs(layersToClassify) do
+   params[layerName].inputPath = "sparse/train/"
+                                 .. layerName .. ".pvp";
+   params[layerName].batchMethod = "byFile";
+   -- Hack to work with dropout, TODO: Find a cleaner way to do this
+   params[layerName .. "Hidden"].probability = 0;
+end
+
+
+params.CategoryEstimate.writeStep        = 1;
+params.CategoryEstimate.initialWriteTime = 1;
+params.GroundTruth.inputPath             = "groundtruth/train_gt.pvp";
+
+-- Write the file and run it through PV with the dry run flag
+file = io.open(paramsDir .. params.column.printParamsFilename, "w");
+io.output(file);
+pv.printConsole(params);
+io.close(file);
+
+command = 
+      "cd " .. runName .. "; "
+      .. pathToBinary .. " -p "
+      .. "params/" .. params.column.printParamsFilename
+      .. " -n; "
+      .. "cd -; cp "
+      .. runName .. "/runs/" .. suffix .. "/"
+      .. params.column.printParamsFilename
+      .. " " .. paramsDir;
+os.execute(command);
+
+-----------------------------------------------------------
+-- Sixth run (run classifier on sparse code of test set) --
+-----------------------------------------------------------
+
+suffix = "testclassify";
+params.column.outputPath          = "runs/" .. suffix;
+params.column.checkpointWriteDir  = params.column.outputPath .. "/checkpoints";
+params.column.printParamsFilename = runName .. "_" .. suffix .. ".params";
+params.column.checkpointWrite     = false;
+params.column.stopTime            = inputTestFiles / params.column.nbatch;
 
 for index, layerName in pairs(layersToClassify) do
    params[layerName].inputPath = "sparse/test/"
