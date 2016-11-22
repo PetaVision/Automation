@@ -5,12 +5,12 @@
 local maxPoolX          = 4;
 local maxPoolY          = 4;
 local nbatch            = numClassBatches;
-local learningRate      = 0.0001;
+local learningRate      = 0.0000125; -- Divided by 8 for big run
 local rateFactor        = 0.25; --1 / math.sqrt(maxPoolX * maxPoolY);
 local hiddenFeatures    = 32; 
 local useGpu            = true;
 local weightStd         = 0.01;
-local hiddenPatch       = 1; --3;
+local hiddenPatch       = 3;
 local connectionType    = "MomentumConn";
 local momentumType      = "simple";
 local momentum          = 0.5;

@@ -40,16 +40,16 @@ classifier = "networks/maxpool_mlp_res.lua"; --"networks/CLASSIFIER_FILE_HERE.lu
 runVersion = 1;
 runName    = "debug_run"; --"RUN_NAME_HERE_" .. runVersion;
 
-displayPeriod   = 100; --200;
+displayPeriod   = 200;
 columnWidth      = 32;
 columnHeight     = 32;
 
-local augmentation = 3;
+local augmentation = 10;
 inputTrainFiles = 50000 * augmentation;
-inputTestFiles  = 10000 * augmentation;
+inputTestFiles  = 10000;
 
 unsupervisedEpochs = 1;
-classifierEpochs   = 1;
+classifierEpochs   = 50;
 
 debugParsing = false;
 
