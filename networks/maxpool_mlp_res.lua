@@ -5,9 +5,9 @@
 local maxPoolX          = 4;
 local maxPoolY          = 4;
 local nbatch            = numClassBatches;
-local learningRate      = 0.0000125; -- Divided by 8 for big run
+local learningRate      = 0.0001;
 local rateFactor        = 0.25; --1 / math.sqrt(maxPoolX * maxPoolY);
-local hiddenFeatures    = 32; 
+local hiddenFeatures    = 128; 
 local useGpu            = true;
 local weightStd         = 0.01;
 local hiddenPatch       = 3;
@@ -17,15 +17,15 @@ local momentum          = 0.5;
 local decayFactor       = 0.01; -- momentum decay is factor * learningRate for each conn
 local biasValue         = 1.0;
 local enableSoftmax     = true;
-local inputDropout      = 15;
-local hiddenDropout     = 40;
+local inputDropout      = 25;
+local hiddenDropout     = 50;
 local normType          = "none";
-local normStrength      = 1.0;
+local normStrength      = 0.1;
 local normDW            = false; 
 local sharedWeights     = true;
 local debugWriteStep    = -1;
 local allHiddenLayer    = true;
-local allHiddenFeatures = 128;
+local allHiddenFeatures = 512;
 
 -- This file requires the global variables:
 --    numCategories,

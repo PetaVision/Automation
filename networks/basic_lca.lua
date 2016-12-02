@@ -7,23 +7,24 @@ local useGpu           = true;
 local inputFeatures    = 3;
 local nbatch           = numSparseBatches;
 local plasticityFlag   = true;
-local checkpointPeriod = displayPeriod * 100;
-local patchSize        = 8;
+local checkpointPeriod = displayPeriod * 25;
+local patchSize        = 16;
 local stride           = 2;
 local dictionarySize   = 512;
 local overcompleteness = 1;
-local momentumTau      = 200;
-local dWMax            = 0.1;
-local VThresh          = 0.025;
+local momentumTau      = 500;
+local VThresh          = 0.1;
 if globalVThresh ~= nil then
    VThresh = globalVThresh;
 end
+local dWMax            = 0.1;
 local AMin             = 0;
 local AMax             = infinity;
 local AShift           = 0;
 local VWidth           = 0; 
-local timeConstantTau  = displayPeriod / 5;
-local weightInit       = math.sqrt((1/patchSize)*(1/patchSize)*(1/inputFeatures));
+local timeConstantTau  = 100; --displayPeriod / 4;
+local weightInit       = 1.0; --math.sqrt((1/patchSize)*(1/patchSize)*(1/inputFeatures));
+local sparseFraction   = 0.999;
 
 if dictionarySize == -1 then
    dictionarySize = overcompleteness * (stride^2) * inputFeatures * 2;
@@ -49,7 +50,7 @@ local pvParams = {
       checkpointWrite               = true;
       checkpointWriteTriggerMode    = "step";
       checkpointWriteStepInterval   = checkpointPeriod;
-      deleteOlderCheckpoints        = true;
+      deleteOlderCheckpoints        = false; --true;
    } 
 };
 
@@ -94,10 +95,10 @@ pv.addGroup(pvParams, "S1", {
          nf                     = dictionarySize;
          phase                  = 3;
          InitVType              = "ConstantV";
-         valueV                 = VThresh;
+         valueV                 = VThresh / 2;
          triggerLayerName       = NULL;
          sparseLayer            = true;
-         writeSparseValues      = true; --true; -- Combining batched sparse values files takes FOREVER
+         writeSparseValues      = true;
          updateGpu              = useGpu;
          dataType               = nil;
          VThresh                = VThresh;
@@ -163,7 +164,7 @@ pv.addGroup(pvParams, "S1ToImageReconS1Error", {
          weightInitType          = "UniformRandomWeight";
          wMinInit                = -1;
          wMaxInit                = 1;
-         sparseFraction          = 0.9;
+         sparseFraction          = sparseFraction;
          triggerLayerName        = "Image";
          pvpatchAccumulateType   = "convolve";
          nxp                     = patchSize;
@@ -215,7 +216,7 @@ pv.addGroup(pvParams, "AdaptProbe", {
          baseMax          = 0.011;
          baseMin          = 0.01;
          tauFactor        = 0.025;
-         growthFactor     = 0.025;
+         growthFactor     = 0.1;
          writeTimeScales  = true;
       }
    );
