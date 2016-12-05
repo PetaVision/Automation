@@ -4,13 +4,15 @@
 
 local maxPoolX          = 4;
 local maxPoolY          = 4;
+local hiddenXScale      = 1 / maxPoolX;
+local hiddenYScale      = 1 / maxPoolY;
 local nbatch            = numClassBatches;
 local learningRate      = 0.0001;
 local rateFactor        = 0.25; --1 / math.sqrt(maxPoolX * maxPoolY);
 local hiddenFeatures    = 128; 
 local useGpu            = true;
 local weightStd         = 0.01;
-local hiddenPatch       = 3;
+local hiddenPatch       = 1;
 local connectionType    = "MomentumConn";
 local momentumType      = "simple";
 local momentum          = 0.5;
@@ -94,7 +96,7 @@ pv.addGroup(pvClassifier, "Bias", {
          groupType        = "ConstantLayer";
          nxScale          = 1 / columnWidth;
          nyScale          = 1 / columnHeight;
-         nf               = numCategories;
+         nf               = 1;
          initV            = "ConstantV";
          valueV           = biasValue;
          phase            = 0;
@@ -202,8 +204,8 @@ for index, layerName in pairs(layersToClassify) do
 
    pv.addGroup(pvClassifier, layerName .. "HiddenError", {
             groupType        = "MaskLayer";
-            nxScale          = maxPoolX / columnWidth;
-            nyScale          = maxPoolY / columnHeight;
+            nxScale          = hiddenXScale * maxPoolX / columnWidth;
+            nyScale          = hiddenYScale * maxPoolY / columnHeight;
             nf               = hiddenFeatures;
             phase            = 8;
             writeStep        = -1;
@@ -216,8 +218,8 @@ for index, layerName in pairs(layersToClassify) do
 
    pv.addGroup(pvClassifier, layerName .. "Hidden", {
             groupType        = "DropoutLayer";
-            nxScale          = maxPoolX / columnWidth;
-            nyScale          = maxPoolY / columnHeight;
+            nxScale          = hiddenXScale * maxPoolX / columnWidth;
+            nyScale          = hiddenYScale * maxPoolY / columnHeight;
             nf               = hiddenFeatures;
             phase            = 2;
             writeStep        = -1;
@@ -539,8 +541,8 @@ for index, layerName in pairs(layersToClassify) do
             preLayerName            = "Bias";
             postLayerName           = layerName .. "HiddenError";
             plasticityFlag          = true;
-            nxp                     = maxPoolX;
-            nyp                     = maxPoolY;
+            nxp                     = hiddenXScale * maxPoolX;
+            nyp                     = hiddenYScale * maxPoolY;
             nfp                     = hiddenFeatures;
             dWMax                   = rateFactor * learningRate / 2;
             weightInitType          = "GaussianRandomWeight";

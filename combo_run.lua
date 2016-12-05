@@ -21,7 +21,7 @@ numSparseCols    = 2;
 numSparseBatches = 40;
 
 -- Threads / Rows / Columns for classifier
-numClassThreads  = 6;
+numClassThreads  = 12;
 numClassRows     = 1;
 numClassCols     = 1;
 numClassBatches  = 40;
