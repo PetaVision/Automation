@@ -27,7 +27,7 @@ numClassRows     = 1;
 numClassCols     = 1;
 numClassBatches  = 40;
 
-mpiBatchWidth    = 8;
+mpiBatchWidth    = 4;
 
 -- The network params file should use the values below.
 -- The params file should *not* call pv.printConsole()
