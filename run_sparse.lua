@@ -28,27 +28,27 @@ end
 local cdPre  = "cd " .. runName .. "; ";
 
 
--- TODO: Allow resuming from any stage. Currently commented out as a hack to acheive this.
+-- TODO: Allow resuming from any stage.
 
 -- Run inital training
---os.execute(cdPre .. mpiPreSparse .. pathToBinary
---           .. " -p params/" .. runName .. "_learndictionary.params"
---           .. " -t " .. numSparseThreads .. mpiPostSparse);
---
+os.execute(cdPre .. mpiPreSparse .. pathToBinary
+           .. " -p params/" .. runName .. "_learndictionary.params"
+           .. " -t " .. numSparseThreads .. mpiPostSparse);
+
 ---- Copy dictionary to dictionary directory
---for index, connName in pairs(plasticConns) do
---   print("Copying " .. connName .. ".pvp\n");
---   if mpiBatchWidth == 1 then
---      os.execute("cp "
---              .. runName .. "/runs/learndictionary/" .. connName .. ".pvp "
---              .. runName .. "/dictionary");
---   else
---      os.execute("cp "
---              .. runName .. "/runs/learndictionary/batchsweep_00/" .. connName .. ".pvp "
---              .. runName .. "/dictionary/" .. connName .. ".pvp");
---    end
---end
---
+for index, connName in pairs(plasticConns) do
+   print("Copying " .. connName .. ".pvp\n");
+   if mpiBatchWidth == 1 then
+      os.execute("cp "
+              .. runName .. "/runs/learndictionary/" .. connName .. ".pvp "
+              .. runName .. "/dictionary");
+   else
+      os.execute("cp "
+              .. runName .. "/runs/learndictionary/batchsweep_00/" .. connName .. ".pvp "
+              .. runName .. "/dictionary/" .. connName .. ".pvp");
+    end
+end
+
 if generateGroundTruth then
    -- If we have a FilenameParsingGroundTruthLayer,
    -- we can't split into rows / cols
@@ -56,12 +56,12 @@ if generateGroundTruth then
    mpiPostSparse    = mpiPostClass;
    numSparseThreads = numClassThreads;
 end
---
+
 ---- Run write train set
---os.execute(cdPre .. mpiPreSparse .. pathToBinary
---           .. " -p params/" .. runName .. "_writetrain.params"
---           .. " -t " .. numSparseThreads .. mpiPostSparse);
---
+os.execute(cdPre .. mpiPreSparse .. pathToBinary
+           .. " -p params/" .. runName .. "_writetrain.params"
+           .. " -t " .. numSparseThreads .. mpiPostSparse);
+
 -- Copy output files and rename ground truth if generated
 for index, layerName in pairs(layersToClassify) do
    if mpiBatchWidth > 1 then
