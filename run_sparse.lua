@@ -27,12 +27,15 @@ end
 
 local cdPre  = "cd " .. runName .. "; ";
 
+
+-- TODO: Allow resuming from any stage.
+
 -- Run inital training
 os.execute(cdPre .. mpiPreSparse .. pathToBinary
            .. " -p params/" .. runName .. "_learndictionary.params"
            .. " -t " .. numSparseThreads .. mpiPostSparse);
 
--- Copy dictionary to dictionary directory
+---- Copy dictionary to dictionary directory
 for index, connName in pairs(plasticConns) do
    print("Copying " .. connName .. ".pvp\n");
    if mpiBatchWidth == 1 then
@@ -54,7 +57,7 @@ if generateGroundTruth then
    numSparseThreads = numClassThreads;
 end
 
--- Run write train set
+---- Run write train set
 os.execute(cdPre .. mpiPreSparse .. pathToBinary
            .. " -p params/" .. runName .. "_writetrain.params"
            .. " -t " .. numSparseThreads .. mpiPostSparse);

@@ -11,12 +11,13 @@ pathToBinary =
       .. "/tests/BasicSystemTest/Release/BasicSystemTest";
 
 -- Path to PetaVision source
-pathToSource = os.getenv("HOME")
+pathToSource =
+      os.getenv("HOME")
       .. "/workspace/OpenPV";
 
 -- Threads / Rows / Columns for sparse coding
-numSparseThreads = 2;
-numSparseRows    = 4;
+numSparseThreads = 1;
+numSparseRows    = 2;
 numSparseCols    = 2;
 numSparseBatches = 40;
 
@@ -37,7 +38,7 @@ classifier = "networks/maxpool_mlp_res.lua"; --"networks/CLASSIFIER_FILE_HERE.lu
 
 -- Global Configuration
 runVersion = 1;
-runName    = "combo_run_0p05"; --"RUN_NAME_HERE_" .. runVersion;
+runName    = "combo_run_0p1"; --"RUN_NAME_HERE_" .. runVersion;
 
 displayPeriod   = 250;
 columnWidth      = 32;

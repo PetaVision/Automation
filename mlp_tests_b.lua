@@ -19,15 +19,15 @@ pathToSource =
 numSparseThreads = 1;
 numSparseRows    = 2;
 numSparseCols    = 2;
-numSparseBatches = 20;
+numSparseBatches = 40;
 
 -- Threads / Rows / Columns for classifier
-numClassThreads  = 7;
+numClassThreads  = 4;
 numClassRows     = 1;
 numClassCols     = 1;
-numClassBatches  = 20;
+numClassBatches  = 40;
 
-mpiBatchWidth    = 4;
+mpiBatchWidth    = 8;
 
 -- The network params file should use the values below.
 -- The params file should *not* call pv.printConsole()
@@ -38,13 +38,13 @@ classifier = "networks/maxpool_mlp_res.lua"; --"networks/CLASSIFIER_FILE_HERE.lu
 
 -- Global Configuration
 runVersion = 1;
-runName    = "debug_run"; --"RUN_NAME_HERE_" .. runVersion;
+runName    = "combo_run_0p1"; --"RUN_NAME_HERE_" .. runVersion;
 
-displayPeriod   = 200;
+displayPeriod   = 250;
 columnWidth      = 32;
 columnHeight     = 32;
 
-local augmentation = 10;
+local augmentation = 4;
 inputTrainFiles = 50000 * augmentation;
 inputTestFiles  = 10000;
 
