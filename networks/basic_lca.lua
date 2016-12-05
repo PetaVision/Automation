@@ -13,7 +13,7 @@ local stride           = 2;
 local dictionarySize   = 512;
 local overcompleteness = 1;
 local momentumTau      = 500;
-local VThresh          = 0.1;
+local VThresh          = 0.05;
 if globalVThresh ~= nil then
    VThresh = globalVThresh;
 end
