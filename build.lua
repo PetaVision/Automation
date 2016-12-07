@@ -401,13 +401,31 @@ print("---------------------------------------\n");
 local doSparse   = true;
 local doClassify = true;
 
+singlePhase = false;
+phaseToRun  = -1;
+
+local foundPhase = false;
+
 for k, v in pairs(arg) do
-   if k > 0 and v == "-nosparse" then
-      doSparse = false;
+
+   if k > 0 and foundPhase then
+      foundPhase = false;
+      phaseToRun = tonumber(v);
+      singlePhase = true;
    end
 
-   if k > 0 and v == "-noclassify" then
-      doClassify = false;
+   if not foundPhase then
+      if k > 0 and v == "-nosparse" then
+         doSparse = false;
+      end
+   
+      if k > 0 and v == "-noclassify" then
+         doClassify = false;
+      end
+   
+      if k > 0 and v == "-phase" then
+         foundPhase = true;
+      end
    end
 end
 
