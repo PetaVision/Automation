@@ -207,7 +207,7 @@ pv.addGroup(pvParams, "ImageReconS1ToImageReconS1Error", {
 ------------
 
 pv.addGroup(pvParams, "AdaptProbe", {
-         groupType        = "AdaptiveTimeScaleProbe";
+         groupType        = "KneeTimeScaleProbe";
          targetName       = "EnergyProbe";
          message          = NULL;
          textOutputFlag   = true;
@@ -219,6 +219,8 @@ pv.addGroup(pvParams, "AdaptProbe", {
          tauFactor        = 0.025;
          growthFactor     = 0.1;
          writeTimeScales  = true;
+         kneeThresh       = 0.75;
+         kneeSlope        = 0.1;
       }
    );
 

@@ -34,7 +34,7 @@ mpiBatchWidth    = 4;
 -- at the end. This script expects the network params
 -- file to use the table params.
 paramsFile = "subnets/basic_lca.lua";
-classifier = "subnets/maxpool_mlp_res.lua";
+classifier = "subnets/maxpool_mlp.lua";
 
 -- Global Configuration
 runVersion = 1;
@@ -104,4 +104,4 @@ classes = {
 -- TODO: Allow specifying ground truth input paths as well --
 -------------------------------------------------------------
 
-dofile("build.lua");
+dofile("scripts/build.lua");

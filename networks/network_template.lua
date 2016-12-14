@@ -104,4 +104,4 @@ classes = {
 -- TODO: Allow specifying ground truth input paths as well --
 -------------------------------------------------------------
 
-dofile("build.lua");
+dofile("scripts/build.lua");
