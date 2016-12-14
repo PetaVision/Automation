@@ -20,7 +20,7 @@ local cdPre  = "cd " .. runName .. "; ";
 -- Run train classifier
 if not singlePhase or phaseToRun == 3 then
    os.execute(cdPre .. mpiPreClass .. pathToBinary
-              .. " -p params/" .. runName .. "_trainclassify.params"
+              .. " -p params/trainclassify.params"
               .. " -t " .. numClassThreads .. mpiPostClass);
    
    -- Copy learned weights
@@ -40,21 +40,21 @@ end
 if not singlePhase or phaseToRun == 4 then
    -- Get score on train set
    os.execute(cdPre .. pathToBinary
-              .. " -p params/" .. runName .. "_scoretrain.params"
+              .. " -p params/scoretrain.params"
               .. " -t " .. numClassThreads);
    
    -- Get score on test set
    os.execute(cdPre .. pathToBinary
-              .. " -p params/" .. runName .. "_testclassify.params"
+              .. " -p params/testclassify.params"
               .. " -t " .. numClassThreads);
    
    -- Run final analysis script
    os.execute("octave --eval \"disp(calc_score('"
          .. runName .. "/runs/scoretrain/CategoryEstimate.pvp', '"
-         .. runName .. "/groundtruth/train_gt.pvp'));\" > " .. runName .. "_train_score.txt");
+         .. runName .. "/groundtruth/train_gt.pvp'));\" > " .. runName .. "/train_score.txt");
    os.execute("octave --eval \"disp(calc_score('"
          .. runName .. "/runs/testclassify/CategoryEstimate.pvp', '"
-         .. runName .. "/groundtruth/test_gt.pvp'));\" > " .. runName .. "_test_score.txt");
-   os.execute("echo \'TRAIN: \'; cat " .. runName .. "_train_score.txt; "
-           .. "echo \'TEST:  \'; cat " .. runName .. "_test_score.txt");
+         .. runName .. "/groundtruth/test_gt.pvp'));\" > " .. runName .. "/test_score.txt");
+   os.execute("echo \'TRAIN: \'; cat " .. runName .. "/train_score.txt; "
+           .. "echo \'TEST:  \'; cat " .. runName .. "/test_score.txt");
 end

@@ -32,7 +32,7 @@ local cdPre  = "cd " .. runName .. "; ";
 -- Run inital training
 if not singlePhase or phaseToRun == 0 then
    os.execute(cdPre .. mpiPreSparse .. pathToBinary
-           .. " -p params/" .. runName .. "_learndictionary.params"
+           .. " -p params/learndictionary.params"
            .. " -t " .. numSparseThreads .. mpiPostSparse);
 
    ---- Copy dictionary to dictionary directory
@@ -61,7 +61,7 @@ end
 ---- Run write train set
 if not singlePhase or phaseToRun == 1 then
    os.execute(cdPre .. mpiPreSparse .. pathToBinary
-              .. " -p params/" .. runName .. "_writetrain.params"
+              .. " -p params/writetrain.params"
               .. " -t " .. numSparseThreads .. mpiPostSparse);
    
    -- Copy output files and rename ground truth if generated
@@ -104,7 +104,7 @@ end
 -- Run write test set
 if not singlePhase or phaseToRun == 2 then
    os.execute(cdPre .. mpiPreSparse .. pathToBinary
-              .. " -p params/" .. runName .. "_writetest.params"
+              .. " -p params/writetest.params"
               .. " -t " .. numSparseThreads .. mpiPostSparse);
    
    -- Copy output files and rename ground truth if generated

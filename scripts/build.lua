@@ -79,18 +79,11 @@ local suffix;
 suffix = "learndictionary";
 
 -- Set column params
-params.column.outputPath =
-      "runs/" .. suffix;
-      
-params.column.checkpointWriteDir =
-      params.column.outputPath .. "/checkpoints";
-
-params.column.printParamsFilename =
-      runName .. "_" .. suffix .. ".params";
-
-params.column.stopTime =
-      displayPeriod * inputTrainFiles
-    / params.column.nbatch * unsupervisedEpochs;
+params.column.outputPath = "runs/" .. suffix;
+params.column.checkpointWriteDir = params.column.outputPath .. "/checkpoints";
+params.column.lastCheckpointDir = params.column.checkpointWriteDir .. "/last";
+params.column.printParamsFilename = suffix .. ".params";
+params.column.stopTime = displayPeriod * inputTrainFiles / params.column.nbatch * unsupervisedEpochs;
 
 -- Set our input to training set and set display period 
 for index, layerName in pairs(inputLayerNames) do
@@ -146,17 +139,11 @@ os.execute(command);
 
 suffix = "writetrain";
 params.column.checkpointWrite = false;
-params.column.outputPath =
-      "runs/" .. suffix;
-
-params.column.checkpointWriteDir =
-      params.column.outputPath .. "/checkpoints";
-
-params.column.printParamsFilename =
-      runName .. "_" .. suffix .. ".params";
-
-params.column.stopTime =
-      displayPeriod * inputTrainFiles / params.column.nbatch;
+params.column.outputPath = "runs/" .. suffix;
+params.column.checkpointWriteDir = params.column.outputPath .. "/checkpoints";
+params.column.lastCheckpointDir = params.column.checkpointWriteDir .. "/last";
+params.column.printParamsFilename = suffix .. ".params";
+params.column.stopTime = displayPeriod * inputTrainFiles / params.column.nbatch;
 
 -- For every connection with plasticityFlag == true, disable
 -- plasticity and use the weights learned in the first run.
@@ -213,17 +200,11 @@ os.execute(command);
 
 suffix = "writetest";
 
-params.column.outputPath =
-      "runs/" .. suffix;
-
-params.column.checkpointWriteDir =
-      params.column.outputPath .. "/checkpoints";
-
-params.column.printParamsFilename =
-      runName .. "_" .. suffix .. ".params";
-
-params.column.stopTime =
-      displayPeriod * inputTestFiles / params.column.nbatch;
+params.column.outputPath = "runs/" .. suffix;
+params.column.checkpointWriteDir = params.column.outputPath .. "/checkpoints";
+params.column.lastCheckpointDir = params.column.checkpointWriteDir .. "/last";
+params.column.printParamsFilename = suffix .. ".params";
+params.column.stopTime = displayPeriod * inputTestFiles / params.column.nbatch;
 
 for index, layerName in pairs(inputLayerNames) do
    params[layerName].inputPath = inputTestLists[index]; 
@@ -253,22 +234,12 @@ os.execute(command);
 params = dofile(classifier);
 
 suffix = "trainclassify";
-
-params.column.outputPath = 
-      "runs/" .. suffix;
-
-params.column.checkpointWriteDir =
-      params.column.outputPath .. "/checkpoints";
-
-params.column.printParamsFilename =
-      runName .. "_" .. suffix .. ".params";
-
-params.column.checkpointWriteStepInterval =
-      inputTrainFiles / params.column.nbatch;
-
-params.column.stopTime =
-      classifierEpochs * params.column.checkpointWriteStepInterval;
-
+params.column.outputPath = "runs/" .. suffix;
+params.column.checkpointWriteDir = params.column.outputPath .. "/checkpoints";
+params.column.lastCheckpointDir = params.column.checkpointWriteDir .. "/last"; 
+params.column.printParamsFilename = suffix .. ".params";
+params.column.checkpointWriteStepInterval = inputTrainFiles / params.column.nbatch;
+params.column.stopTime = classifierEpochs * params.column.checkpointWriteStepInterval;
 params.column.checkpointWriteStepInterval = params.column.checkpointWriteStepInterval * 10;
 
 for k, v in pairs(params) do
@@ -311,7 +282,8 @@ os.execute(command);
 suffix = "scoretrain";
 params.column.outputPath          = "runs/" .. suffix;
 params.column.checkpointWriteDir  = params.column.outputPath .. "/checkpoints";
-params.column.printParamsFilename = runName .. "_" .. suffix .. ".params";
+params.column.lastCheckpointDir   = params.column.checkpointWriteDir .. "/last"
+params.column.printParamsFilename = suffix .. ".params";
 params.column.checkpointWrite     = false;
 params.column.stopTime            = inputTrainFiles / params.column.nbatch;
 
@@ -329,10 +301,15 @@ for index, layerName in pairs(layersToClassify) do
    params[layerName].inputPath = "sparse/train/"
                                  .. layerName .. ".pvp";
    params[layerName].batchMethod = "byFile";
-   -- Hack to work with dropout, TODO: Find a cleaner way to do this
-   params[layerName .. "Hidden"].probability = 0;
 end
 
+for k,v in pairs(params) do
+   if type(v) == "table" then
+      if v["groupType"] == "DropoutLayer" then
+         v["probability"] = 0;
+      end
+   end
+end
 
 params.CategoryEstimate.writeStep        = 1;
 params.CategoryEstimate.initialWriteTime = 1;
@@ -362,7 +339,8 @@ os.execute(command);
 suffix = "testclassify";
 params.column.outputPath          = "runs/" .. suffix;
 params.column.checkpointWriteDir  = params.column.outputPath .. "/checkpoints";
-params.column.printParamsFilename = runName .. "_" .. suffix .. ".params";
+params.column.lastCheckpointDir   = params.column.checkpointWriteDir .. "/last";
+params.column.printParamsFilename = suffix .. ".params";
 params.column.checkpointWrite     = false;
 params.column.stopTime            = inputTestFiles / params.column.nbatch;
 

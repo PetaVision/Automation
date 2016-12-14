@@ -22,9 +22,9 @@ local AMin             = 0;
 local AMax             = infinity;
 local AShift           = 0;
 local VWidth           = 0; 
-local timeConstantTau  = 100;
+local timeConstantTau  = 125;
 local weightInit       = 1.0;
-local sparseFraction   = 0.99;
+local sparseFraction   = 0.975;
 
 if dictionarySize == -1 then
    dictionarySize = overcompleteness * (stride^2) * inputFeatures * 2;
@@ -216,11 +216,11 @@ pv.addGroup(pvParams, "AdaptProbe", {
          triggerOffset    = 0;
          baseMax          = 0.011;
          baseMin          = 0.01;
-         tauFactor        = 0.025;
-         growthFactor     = 0.1;
+         tauFactor        = 0.05;
+         growthFactor     = 0.025;
          writeTimeScales  = true;
-         kneeThresh       = 0.75;
-         kneeSlope        = 0.1;
+         kneeThresh       = 0.2;
+         kneeSlope        = 0.01;
       }
    );
 
