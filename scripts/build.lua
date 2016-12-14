@@ -26,8 +26,9 @@ os.execute("mkdir -p " .. runsDir .. "scoretrain");
 os.execute("cp " .. debug.getinfo(1).short_src .. " " .. luaDir);
 os.execute("cp " .. paramsFile .. " " .. luaDir);
 os.execute("cp " .. classifier .. " " .. luaDir);
-os.execute("cp run_sparse.lua " .. runName .. "/.");
-os.execute("cp run_classify.lua " .. runName .. "/.");
+os.execute("cp scripts/build.lua " .. luaDir);
+os.execute("cp scripts/run_sparse.lua " .. luaDir);
+os.execute("cp scripts/run_classify.lua " .. luaDir);
 
 -- Generate our classes.txt
 if generateGroundTruth then
@@ -430,9 +431,9 @@ for k, v in pairs(arg) do
 end
 
 if doSparse then
-   dofile("run_sparse.lua");
+   dofile("scripts/run_sparse.lua");
 end
 
 if doClassify then
-   dofile("run_classify.lua");
+   dofile("scripts/run_classify.lua");
 end

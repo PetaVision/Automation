@@ -1,0 +1,3 @@
+Run the appropriate lua network file from this working directory, like:
+
+lua networks/my_network.lua [-nosparse | -noclassify | -phase X]

@@ -8,23 +8,23 @@ local inputFeatures    = 3;
 local nbatch           = numSparseBatches;
 local plasticityFlag   = true;
 local checkpointPeriod = displayPeriod * 25;
-local patchSize        = 16;
-local stride           = 2;
-local dictionarySize   = 512;
+local patchSize        = 7;
+local stride           = 1;
+local dictionarySize   = 64;
 local overcompleteness = 1;
 local momentumTau      = 500;
-local VThresh          = 0.05;
+local VThresh          = 0.15;
 if globalVThresh ~= nil then
    VThresh = globalVThresh;
 end
-local dWMax            = 0.1;
+local dWMax            = 0.05;
 local AMin             = 0;
 local AMax             = infinity;
 local AShift           = 0;
 local VWidth           = 0; 
-local timeConstantTau  = 100; --displayPeriod / 4;
-local weightInit       = 1.0; --math.sqrt((1/patchSize)*(1/patchSize)*(1/inputFeatures));
-local sparseFraction   = 0.999;
+local timeConstantTau  = 100;
+local weightInit       = 1.0;
+local sparseFraction   = 0.99;
 
 if dictionarySize == -1 then
    dictionarySize = overcompleteness * (stride^2) * inputFeatures * 2;
@@ -164,6 +164,7 @@ pv.addGroup(pvParams, "S1ToImageReconS1Error", {
          weightInitType          = "UniformRandomWeight";
          wMinInit                = -1;
          wMaxInit                = 1;
+         minNNZ                  = 1;
          sparseFraction          = sparseFraction;
          triggerLayerName        = "Image";
          pvpatchAccumulateType   = "convolve";
