@@ -7,7 +7,7 @@ local useGpu           = true;
 local inputFeatures    = 3;
 local nbatch           = numSparseBatches;
 local plasticityFlag   = true;
-local checkpointPeriod = displayPeriod * 25;
+local checkpointPeriod = displayPeriod * 50;
 local patchSize        = 7;
 local stride           = 1;
 

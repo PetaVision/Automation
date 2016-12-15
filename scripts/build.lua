@@ -93,9 +93,9 @@ for index, layerName in pairs(inputLayerNames) do
 end
 
 for index, layerName in pairs(layersToClassify) do
-   -- Write out our sparse code for analysis
-   params[layerName].initialWriteTime = displayPeriod;
-   params[layerName].writeStep        = displayPeriod;
+   -- Don't write sparse code while learning
+   params[layerName].initialWriteTime = -1;
+   params[layerName].writeStep        = -1;
     
    -- Store the dimensions of the layers to classify for later
    layersToClassifyFeatures[layerName]  = params[layerName].nf;
@@ -157,10 +157,10 @@ for k, v in pairs(params) do
    end
 end
 
--- Random order shouldn't matter here, right?
---for index, layerName in pairs(inputLayerNames) do
---   params[layerName].batchMethod = "byFile";
---end
+for index, layerName in pairs(inputLayerNames) do
+   params[layerName].initialWriteTime = displayPeriod;
+   params[layerName].writeStep        = displayPeriod;
+end
 
 if generateGroundTruth then
    params["GroundTruth"] = {
