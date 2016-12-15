@@ -16,7 +16,7 @@ pathToSource =
       .. "/workspace/OpenPV";
 
 -- Global Configuration
-globalVThresh = 0.005;
+globalVThresh = 0.05;
 runVersion    = 1;
 
 for v = 1,8 do
@@ -26,35 +26,38 @@ for v = 1,8 do
    print("************************************************");
 
    -- Threads / Rows / Columns for sparse coding
-   numSparseThreads = 8;
+   numSparseThreads = 3;
    numSparseRows    = 2;
    numSparseCols    = 2;
+   numSparseBatches = 20;
 
    -- Threads / Rows / Columns for classifier
-   numClassThreads  = 32;
+   numClassThreads  = 12;
    numClassRows     = 1;
    numClassCols     = 1;
+   numClassBatches  = 20;
+   mpiBatchWidth = 2;
 
    -- The network params file should use the values below.
    -- The params file should *not* call pv.printConsole()
    -- at the end. This script expects the network params
    -- file to use the table params.
-   paramsFile = "networks/basic_lca.lua";
-   classifier = "networks/maxpool_mlp.lua";
+   paramsFile = "subnets/basic_lca.lua";
+   classifier = "subnets/maxpool_mlp.lua";
 
    runVersion    = v;
    runName       = "cifar_vthresh_sweep_" .. runVersion;
 
-   globalVThresh = globalVThresh + 0.005;
-   displayPeriod = 500;
+   globalVThresh = globalVThresh + 0.05;
+   displayPeriod = 250;
    columnWidth   = 32;
    columnHeight  = 32;
 
    inputTrainFiles = 50000;
    inputTestFiles  = 10000;
 
-   unsupervisedEpochs = 3;
-   classifierEpochs   = 200;
+   unsupervisedEpochs = 1;
+   classifierEpochs   = 50;
 
    debugParsing = false;
 
@@ -63,6 +66,9 @@ for v = 1,8 do
    inputLayerNames = {
          "Image"
       }; 
+   inputLayerBatchMethods = {
+      "byFile"
+   };
    inputTrainLists = {
          "/shared/cifar-10-batches-mat/mixed_cifar.txt"
       };
@@ -106,5 +112,5 @@ for v = 1,8 do
    -- TODO: Allow specifying ground truth input paths as well --
    -------------------------------------------------------------
 
-   dofile("build.lua");
+   dofile("scripts/build.lua");
 end
