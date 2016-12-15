@@ -17,7 +17,7 @@ local VThresh          = 0.15;
 if globalVThresh ~= nil then
    VThresh = globalVThresh;
 end
-local dWMax            = 0.05;
+local dWMax            = 0.01;
 local AMin             = 0;
 local AMax             = infinity;
 local AShift           = 0;

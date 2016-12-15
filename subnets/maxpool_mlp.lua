@@ -2,8 +2,8 @@
 -- Params --
 ------------
 
-local maxPoolX          = 4;
-local maxPoolY          = 4;
+local maxPoolX          = 8;
+local maxPoolY          = 8;
 local hiddenXScale      = 0.5; -- This scale is relative to the maxPool dimensions
 local hiddenYScale      = 0.5; 
 local nbatch            = numClassBatches;
@@ -12,7 +12,7 @@ local rateFactor        = 0.25; -- Hidden layers learn at this rate relative to 
 local hiddenFeatures    = 64; 
 local useGpu            = true;
 local weightStd         = 0.01;
-local hiddenPatch       = 1;
+local hiddenPatch       = 2;
 local connectionType    = "MomentumConn";
 local momentumType      = "simple";
 local momentum          = 0.5;
