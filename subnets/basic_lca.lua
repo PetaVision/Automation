@@ -10,14 +10,19 @@ local plasticityFlag   = true;
 local checkpointPeriod = displayPeriod * 25;
 local patchSize        = 7;
 local stride           = 1;
+
 local dictionarySize   = 64;
-local overcompleteness = 1;
-local momentumTau      = 500;
+if globalDictionarySize ~= nil then
+   dictionarySize = globalDictionarySize;
+end
+
 local VThresh          = 0.15;
 if globalVThresh ~= nil then
    VThresh = globalVThresh;
 end
+
 local dWMax            = 0.01;
+local momentumTau      = 500;
 local AMin             = 0;
 local AMax             = infinity;
 local AShift           = 0;
@@ -26,9 +31,6 @@ local timeConstantTau  = 125;
 local weightInit       = 1.0;
 local sparseFraction   = 0.975;
 
-if dictionarySize == -1 then
-   dictionarySize = overcompleteness * (stride^2) * inputFeatures * 2;
-end
 
 -- This file requires the global variables displayPeriod,
 -- columnWidth, and columnHeight to already be set.

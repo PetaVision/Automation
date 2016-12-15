@@ -16,27 +16,28 @@ pathToSource =
       .. "/workspace/OpenPV";
 
 -- Global Configuration
-globalVThresh = 0.05;
-runVersion    = 1;
+globalDictionarySize = 16; -- This will get doubled to 32 for the first run
+runVersion = 1;
 
-for v = 1,8 do
+for v = 1,6 do
 
    print("************************************************");
    print("*  STARTING SWEEP ITERATION " .. runVersion);
    print("************************************************");
 
    -- Threads / Rows / Columns for sparse coding
-   numSparseThreads = 3;
+   numSparseThreads = 2;
    numSparseRows    = 2;
    numSparseCols    = 2;
-   numSparseBatches = 20;
+   numSparseBatches = 40;
 
    -- Threads / Rows / Columns for classifier
-   numClassThreads  = 12;
+   numClassThreads  = 7;
    numClassRows     = 1;
    numClassCols     = 1;
-   numClassBatches  = 20;
-   mpiBatchWidth = 2;
+   numClassBatches  = 40;
+
+   mpiBatchWidth = 4;
 
    -- The network params file should use the values below.
    -- The params file should *not* call pv.printConsole()
@@ -46,9 +47,9 @@ for v = 1,8 do
    classifier = "subnets/maxpool_mlp.lua";
 
    runVersion    = v;
-   runName       = "cifar_vthresh_sweep_" .. runVersion;
+   runName       = "cifar_feature_sweep_" .. runVersion;
 
-   globalVThresh = globalVThresh + 0.05;
+   globalDictionarySize = globalDictionarySize * 2;
    displayPeriod = 250;
    columnWidth   = 32;
    columnHeight  = 32;
