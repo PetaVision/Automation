@@ -16,7 +16,7 @@ if globalDictionarySize ~= nil then
    dictionarySize = globalDictionarySize;
 end
 
-local VThresh          = 0.15;
+local VThresh          = 0.05;
 if globalVThresh ~= nil then
    VThresh = globalVThresh;
 end

@@ -16,10 +16,10 @@ pathToSource =
       .. "/workspace/OpenPV";
 
 -- Global Configuration
-globalDictionarySize = 16; -- This will get doubled to 32 for the first run
+globalDictionarySize = 8;
 runVersion = 1;
 
-for v = 1,6 do
+for v = 1,8 do
 
    print("************************************************");
    print("*  STARTING SWEEP ITERATION " .. runVersion);
@@ -47,7 +47,7 @@ for v = 1,6 do
    classifier = "subnets/maxpool_mlp.lua";
 
    runVersion    = v;
-   runName       = "cifar_feature_sweep_" .. runVersion;
+   runName       = "cifar_feature_sweep_b_" .. runVersion;
 
    globalDictionarySize = globalDictionarySize * 2;
    displayPeriod = 250;

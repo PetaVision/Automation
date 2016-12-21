@@ -93,9 +93,8 @@ for index, layerName in pairs(inputLayerNames) do
 end
 
 for index, layerName in pairs(layersToClassify) do
-   -- Write out our sparse code for analysis
-   params[layerName].initialWriteTime = displayPeriod;
-   params[layerName].writeStep        = displayPeriod;
+   params[layerName].initialWriteTime = -1;
+   params[layerName].writeStep        = -1;
     
    -- Store the dimensions of the layers to classify for later
    layersToClassifyFeatures[layerName]  = params[layerName].nf;
@@ -161,6 +160,11 @@ end
 --for index, layerName in pairs(inputLayerNames) do
 --   params[layerName].batchMethod = "byFile";
 --end
+
+for index, layerName in pairs(layersToClassify) do
+   params[layerName].initialWriteTime = displayPeriod;
+   params[layerName].writeStep        = displayPeriod;
+end
 
 if generateGroundTruth then
    params["GroundTruth"] = {

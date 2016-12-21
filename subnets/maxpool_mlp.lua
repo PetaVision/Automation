@@ -10,7 +10,13 @@ local hiddenYScale      = 0.5;
 local nbatch            = numClassBatches;
 local learningRate      = 0.0001;
 local rateFactor        = 0.25; -- Hidden layers learn at this rate relative to the learning rate
+
+-- Scale hidden feature count along with LCA feature count
 local hiddenFeatures    = 64 * featureMult; 
+if globalDictionarySize ~= nil then
+   hiddenFeatures = globalDictionarySize * featureMult;
+end
+
 local useGpu            = true;
 local weightStd         = 0.01;
 local hiddenPatch       = 2;
@@ -28,7 +34,7 @@ local normDW            = false;
 local sharedWeights     = true;
 local debugWriteStep    = -1;
 local allHiddenLayer    = true;
-local allHiddenFeatures = 128 * featureMult;
+local allHiddenFeatures = hiddenFeatures * 2;
 
 -- This file requires the global variables:
 --    numCategories,
