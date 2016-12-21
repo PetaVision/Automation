@@ -93,6 +93,7 @@ for index, layerName in pairs(inputLayerNames) do
 end
 
 for index, layerName in pairs(layersToClassify) do
+   -- Don't write sparse code while learning
    params[layerName].initialWriteTime = -1;
    params[layerName].writeStep        = -1;
     
@@ -155,11 +156,6 @@ for k, v in pairs(params) do
       v.writeStep        = -1;
    end
 end
-
--- Random order shouldn't matter here, right?
---for index, layerName in pairs(inputLayerNames) do
---   params[layerName].batchMethod = "byFile";
---end
 
 for index, layerName in pairs(layersToClassify) do
    params[layerName].initialWriteTime = displayPeriod;
