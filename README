@@ -1,3 +1,7 @@
 Run the appropriate lua network file from this working directory, like:
 
 lua networks/my_network.lua [-nosparse | -noclassify | -phase X]
+
+Requires octave. Modify your ~/.octaverc file to include the OpenPV matlab script path:
+
+    addpath("path_to_openpv/OpenPV/mlab/util");
