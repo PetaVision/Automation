@@ -16,13 +16,13 @@ pathToSource =
       .. "/workspace/OpenPV";
 
 -- Threads / Rows / Columns for sparse coding
-numSparseThreads = 1;
+numSparseThreads = 2;
 numSparseRows    = 2;
 numSparseCols    = 2;
 numSparseBatches = 40;
 
 -- Threads / Rows / Columns for classifier
-numClassThreads  = 7;
+numClassThreads  = 8;
 numClassRows     = 1;
 numClassCols     = 1;
 numClassBatches  = 40;
@@ -36,15 +36,16 @@ mpiBatchWidth = 4;
 paramsFile = "subnets/basic_lca.lua";
 classifier = "subnets/maxpool_mlp.lua";
 
-runVersion    = 1;
+runVersion    = 2;
 runName       = "cifar_optimal_" .. runVersion;
 
 
 globalDictionarySize = 256;
 globalVThresh = 0.1;
+globalPatchSize = 13;
 
 augmentation = 4;
-displayPeriod = 250;
+displayPeriod = 250 * 2;
 columnWidth   = 32;
 columnHeight  = 32;
 

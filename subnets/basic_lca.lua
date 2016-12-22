@@ -8,8 +8,12 @@ local inputFeatures    = 3;
 local nbatch           = numSparseBatches;
 local plasticityFlag   = true;
 local checkpointPeriod = displayPeriod * 50;
-local patchSize        = 7;
 local stride           = 1;
+local patchSize        = 7;
+if globalPatchSize ~= nil then
+   patchSize = globalPatchSize;
+end
+
 
 local dictionarySize   = 64;
 if globalDictionarySize ~= nil then
