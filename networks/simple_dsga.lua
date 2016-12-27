@@ -22,12 +22,12 @@ numSparseCols    = 2;
 numSparseBatches = 40;
 
 -- Threads / Rows / Columns for classifier
-numClassThreads  = 3;
+numClassThreads  = 8;
 numClassRows     = 1;
 numClassCols     = 1;
 numClassBatches  = 40;
 
-mpiBatchWidth    = 8;
+mpiBatchWidth    = 4;
 
 -- The network params file should use the values below.
 -- The params file should *not* call pv.printConsole()

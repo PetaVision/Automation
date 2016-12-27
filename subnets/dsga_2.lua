@@ -37,7 +37,7 @@ local sparseFraction   = 0.975;
 
 -- S2 Params
 local strideS2   = 2;
-local patchS2    = 4;
+local patchS2    = patchSize + 1; --4;
 local imgPatchS2 = patchSize + patchS2 - 1;
 
 ------------
@@ -192,7 +192,7 @@ pv.addGroup(pvParams, "S1ReconS2",  {
          groupType        = "HyPerLayer";
          nxScale          = 1;
          nyScale          = 1;
-         nf               = inputFeatures;
+         nf               = dictionarySize;
          phase            = 6;
          InitVType        = "ZeroV";
          triggerLayerName = NULL;
