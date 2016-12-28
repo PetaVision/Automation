@@ -3,23 +3,23 @@
 ------------
 
 local featureMult       = 1;
-local maxPoolX          = 8;
-local maxPoolY          = 8;
-local hiddenXScale      = 0.5; -- This scale is relative to the maxPool dimensions
-local hiddenYScale      = 0.5; 
+local maxPoolX          = 4; --8
+local maxPoolY          = 4; --8
+local hiddenXScale      = 1; --0.5 -- This scale is relative to the maxPool dimensions
+local hiddenYScale      = 1; --0.5 
 local nbatch            = numClassBatches;
-local learningRate      = 0.0001;
-local rateFactor        = 0.25; -- Hidden layers learn at this rate relative to the learning rate
+local learningRate      = 0.0001 * 0.3;
+local rateFactor        = 0.5; --0.25; -- Hidden layers learn at this rate relative to the learning rate
 
 -- Scale hidden feature count along with LCA feature count
-local hiddenFeatures    = 64 * featureMult; 
+local hiddenFeatures    = 64 * featureMult;
 if globalDictionarySize ~= nil then
    hiddenFeatures = globalDictionarySize * featureMult;
 end
 
 local useGpu            = true;
 local weightStd         = 0.01;
-local hiddenPatch       = 2;
+local hiddenPatch       = 1; --2;
 local connectionType    = "MomentumConn";
 local momentumType      = "simple";
 local momentum          = 0.5;

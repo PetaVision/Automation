@@ -379,6 +379,7 @@ print("---------------------------------------\n");
 
 local doSparse   = true;
 local doClassify = true;
+local doAnalysis = true;
 
 singlePhase = false;
 phaseToRun  = -1;
@@ -401,6 +402,10 @@ for k, v in pairs(arg) do
       if k > 0 and v == "-noclassify" then
          doClassify = false;
       end
+
+      if k > 0 and v == "-noanalysis" then
+         doAnalysis = false;
+      end
    
       if k > 0 and v == "-phase" then
          foundPhase = true;
@@ -414,4 +419,8 @@ end
 
 if doClassify then
    dofile("scripts/run_classify.lua");
+end
+
+if doAnalysis then
+   dofile("scripts/run_analysis.lua");
 end
