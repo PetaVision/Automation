@@ -2,7 +2,7 @@
 -- Params --
 ------------
 
-local nbatch       = 8;
+local nbatch       = numClassBatches;
 local learningRate = 0.01;
 
 -- This file requires the global variables:

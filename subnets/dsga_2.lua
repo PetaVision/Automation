@@ -290,7 +290,8 @@ pv.addGroup(pvParams, "S2ToImageReconError", {
          pvpatchAccumulateType   = "convolve";
          nxp                     = imgPatchS2;
          nyp                     = imgPatchS2;
-         normalizeMethod         = "normalizeL2";
+         normalizeMethod         = "normalizeGroup";
+	 normalizeGroupName      = "S2ToS1ReconError";
          strength                = 1;
          normalizeOnInitialize   = true;
          normalizeOnWeightUpdate = true;
