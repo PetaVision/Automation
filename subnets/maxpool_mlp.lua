@@ -582,7 +582,7 @@ for index, layerName in pairs(layersToClassify) do
                plasticityFlag          = true;
                nxp                     = hiddenPatch;
                nyp                     = hiddenPatch;
-               nfp                     = hiddenFeatures;
+               nfp                     = numCategories;
                dWMax                   = learningRate;
                weightInitType          = "GaussianRandomWeight";
                wGaussMean              = 0;
