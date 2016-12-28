@@ -25,7 +25,6 @@ local momentumType      = "simple";
 local momentum          = 0.5;
 local decayFactor       = 0.01; -- momentum decay is factor * learningRate for each conn
 local biasValue         = 1.0;
-local enableSoftmax     = true;
 local inputDropout      = 25;
 local hiddenDropout     = 50;
 local normType          = "none";
@@ -36,13 +35,12 @@ local debugWriteStep    = -1;
 local allHiddenLayer    = true;
 local allHiddenFeatures = hiddenFeatures * 2;
 
--- This file requires the global variables:
---    numCategories,
---    columnWidth
---    columnHeight
---    layersToClassifyFeatures
---    layersToClassifyXScale
---    layersToClassifyYScale
+-- If this flag is true, the network trains an additional classifier
+-- using the max pool layers as input to a softmax
+if enableSimpleClassifier == nil then
+   enableSimpleClassifier = true;
+end
+
 
 ------------
 -- Column --
@@ -83,10 +81,6 @@ pv.addGroup(pvClassifier, "SoftmaxEstimate", {
       }
    );
 
-if not enableSoftmax then
-   pvClassifier.SoftmaxEstimate.groupType = "CloneVLayer";
-end
-
 pv.addGroup(pvClassifier, "CategoryEstimate", {
          groupType        = "HyPerLayer";
          nxScale          = 1 / columnWidth;
@@ -98,6 +92,46 @@ pv.addGroup(pvClassifier, "CategoryEstimate", {
          InitVType        = "ZeroV";
       }
    );
+
+if enableSimpleClassifier then
+   pv.addGroup(pvClassifier, "SimpleSoftmaxEstimate", {
+            groupType         = "RescaleLayer";
+            nxScale           = 1 / columnWidth;
+            nyScale           = 1 / columnHeight;
+            nf                = numCategories;
+            phase             = 5;
+            writeStep         = -1;
+            initialWriteTime  = -1;
+            rescaleMethod     = "softmax";
+            originalLayerName = "SimpleCategoryEstimate";
+            InitVType         = "ZeroV";
+         }
+      );
+
+   pv.addGroup(pvClassifier, "SimpleCategoryEstimate", {
+            groupType        = "HyPerLayer";
+            nxScale          = 1 / columnWidth;
+            nyScale          = 1 / columnHeight;
+            nf               = numCategories;
+            phase            = 4;
+            writeStep        = -1;
+            initialWriteTime = -1;
+            InitVType        = "ZeroV";
+         }
+      );
+   pv.addGroup(pvClassifier, "SimpleEstimateError", {
+            groupType        = "HyPerLayer";
+            nxScale          = 1 / columnWidth;
+            nyScale          = 1 / columnHeight;
+            nf               = numCategories;
+            phase            = 6;
+            writeStep        = -1;
+            initialWriteTime = -1;
+            InitVType        = "ZeroV";
+         }
+      );
+
+end
 
 pv.addGroup(pvClassifier, "Bias", {
          groupType        = "ConstantLayer";
@@ -262,6 +296,58 @@ pv.addGroup(pvClassifier, "SoftmaxEstimateToEstimateError", {
          postLayerName = "EstimateError";
       }
    );
+
+if enableSimpleClassifier then
+   pv.addGroup(pvClassifier, "GroundTruthToSimpleEstimateError", {
+            groupType     = "IdentConn";
+            channelCode   = 0;
+            preLayerName  = "GroundTruth";
+            postLayerName = "SimpleEstimateError";
+         }
+      );
+
+   pv.addGroup(pvClassifier, "SimpleSoftmaxEstimateToSimpleEstimateError", {
+            groupType     = "IdentConn";
+            channelCode   = 1;
+            preLayerName  = "SimpleSoftmaxEstimate";
+            postLayerName = "SimpleEstimateError";
+         }
+      );
+
+   pv.addGroup(pvClassifier, "BiasToSimpleEstimateError", {
+            groupType               = connectionType;
+            momentumMethod          = momentumType;
+            momentumTau             = momentum;
+            momentumDecay           = decayFactor * learningRate / 2;
+            channelCode             = -1;
+            preLayerName            = "Bias";
+            postLayerName           = "SimpleEstimateError";
+            plasticityFlag          = true;
+            nxp                     = 1;
+            nyp                     = 1;
+            nfp                     = numCategories;
+            dWMax                   = learningRate / 2;
+            weightInitType          = "GaussianRandomWeight";
+            wGaussMean              = 0;
+            wGaussStdev             = 0;
+            normalizeMethod         = normType;
+            strength                = normStrength;
+            normalizeDw             = normDW;
+            initialWeightUpdateTime = 2;
+         }
+      );
+
+   pv.addGroup(pvClassifier, "BiasToSimpleCategoryEstimate", {
+            groupType        = "CloneConn";
+            channelCode      = 0;
+            preLayerName     = "Bias";
+            postLayerName    = "SimpleCategoryEstimate";
+            writeStep        = -1;
+            initialWriteTime = -1;
+            originalConnName = "BiasToSimpleEstimateError";
+         }
+      );
+end
 
 if allHiddenLayer then
    pv.addGroup(pvClassifier, "AllHiddenToEstimateError", {
@@ -484,6 +570,45 @@ for index, layerName in pairs(layersToClassify) do
   
    end
 
+   if enableSimpleClassifier then
+      pv.addGroup(pvClassifier, maxPoolLayerName .. "ToSimpleEstimateError", {
+               groupType               = connectionType;
+               momentumMethod          = momentumType;
+               momentumTau             = momentum;
+               momentumDecay           = decayFactor * rateFactor * learningRate;
+               channelCode             = -1;
+               preLayerName            = maxPoolLayerName;
+               postLayerName           = "SimpleEstimateError";
+               plasticityFlag          = true;
+               nxp                     = hiddenPatch;
+               nyp                     = hiddenPatch;
+               nfp                     = hiddenFeatures;
+               dWMax                   = learningRate;
+               weightInitType          = "GaussianRandomWeight";
+               wGaussMean              = 0;
+               wGaussStdev             = weightStd;
+               receiveGpu              = useGpu;
+               normalizeMethod         = normType;
+               strength                = normStrength;
+               normalizeDw             = normDW;
+               sharedWeights           = true;
+               initialWeightUpdateTime = 2;
+               writeStep               = debugWriteStep;
+               initialWriteTime        = 0;
+            }
+         );
+
+      pv.addGroup(pvClassifier, maxPoolLayerName .. "ToSimpleCategoryEstimate", {
+               groupType        = "CloneConn";
+               channelCode      = 0;
+               preLayerName     = maxPoolLayerName;
+               postLayerName    = "SimpleCategoryEstimate";
+               writeStep        = -1;
+               initialWriteTime = -1;
+               originalConnName = maxPoolLayerName .. "ToSimpleEstimateError";
+            }
+         );
+   end
    pv.addGroup(pvClassifier, layerName .. "To" .. maxPoolLayerName, {
             groupType             = "PoolingConn";
             channelCode           = 0;

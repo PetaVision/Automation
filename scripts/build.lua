@@ -311,6 +311,11 @@ for k,v in pairs(params) do
    end
 end
 
+if params.SimpleCategoryEstimate ~= nil then
+   params.SimpleCategoryEstimate.writeStep        = 1;
+   params.SimpleCategoryEstimate.initialWriteTime = 1;
+end
+
 params.CategoryEstimate.writeStep        = 1;
 params.CategoryEstimate.initialWriteTime = 1;
 params.GroundTruth.inputPath             = "groundtruth/train_gt.pvp";
@@ -350,9 +355,13 @@ for index, layerName in pairs(layersToClassify) do
    params[layerName].batchMethod = "byFile";
 end
 
+if params.SimpleCategoryEstimate ~= nil then
+   params.SimpleCategoryEstimate.writeStep        = 1;
+   params.SimpleCategoryEstimate.initialWriteTime = 1;
+end
+
 params.CategoryEstimate.writeStep        = 1;
 params.CategoryEstimate.initialWriteTime = 1;
---params.CategoryEstimate.groupType        = "HyPerLayer"; -- Required if clamping
 params.GroundTruth.inputPath             = "groundtruth/test_gt.pvp";
 
 -- Write the file and run it through PV with the dry run flag

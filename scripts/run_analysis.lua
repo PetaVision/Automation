@@ -18,11 +18,26 @@ os.execute("octave -q --eval \"disp(calc_score('"
       .. runName .. "/runs/testclassify/CategoryEstimate.pvp', '"
       .. runName .. "/groundtruth/test_gt.pvp'));\" > " .. runName .. "/test_score.txt");
 
+if enableSimpleClassifier then
+   os.execute("octave -q --eval \"disp(calc_score('"
+         .. runName .. "/runs/scoretrain/SimpleCategoryEstimate.pvp', '"
+         .. runName .. "/groundtruth/train_gt.pvp'));\" > " .. runName .. "/simple_train_score.txt");
+   os.execute("octave -q --eval \"disp(calc_score('"
+         .. runName .. "/runs/testclassify/SimpleCategoryEstimate.pvp', '"
+         .. runName .. "/groundtruth/test_gt.pvp'));\" > " .. runName .. "/simple_test_score.txt");
+end
+
 os.execute("echo \'SPARSITY:\':");
 os.execute("echo \'TRAIN: \'; cat " .. runName .. "/train_score.txt; "
         .. "echo \'TEST:  \'; cat " .. runName .. "/test_score.txt");
 
-os.execute("echo \'CLASSIFICATION:\':");
+if enableSimpleClassifier then
+   os.execute("echo \'SHALLOW CLASSIFICATION:\':");
+   os.execute("echo \'TRAIN: \'; cat " .. runName .. "/simple_train_score.txt; "
+           .. "echo \'TEST:  \'; cat " .. runName .. "/simple_test_score.txt");
+end
+
+os.execute("echo \'DEEP CLASSIFICATION:\':");
 os.execute("echo \'TRAIN: \'; cat " .. runName .. "/train_score.txt; "
         .. "echo \'TEST:  \'; cat " .. runName .. "/test_score.txt");
 
