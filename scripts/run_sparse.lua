@@ -64,7 +64,7 @@ if not singlePhase or phaseToRun == 1 then
               .. " -p params/writetrain.params"
               .. " -t " .. numSparseThreads .. mpiPostSparse);
    
-   -- Copy output files and rename ground truth if generated
+   -- Move output files and rename ground truth if generated
    for index, layerName in pairs(layersToClassify) do
       if mpiBatchWidth > 1 then
          print("Merging batched files for " .. layerName .. "\n");
@@ -79,8 +79,8 @@ if not singlePhase or phaseToRun == 1 then
             .. "mv " .. layerName .. ".pvp "
                      .. runName .. "/runs/writetrain");
       end
-      print("Copying " .. layerName .. ".pvp\n");
-      os.execute("cp "
+      print("Moving " .. layerName .. ".pvp\n");
+      os.execute("mv "
                  .. runName .. "/runs/writetrain/" .. layerName .. ".pvp "
                  .. runName .. "/sparse/train");
    end
@@ -96,7 +96,7 @@ if not singlePhase or phaseToRun == 1 then
       os.execute("mv GroundTruth.pvp "
                   .. runName .. "/runs/writetrain");
    end
-   os.execute("cp "
+   os.execute("mv "
                  .. runName .. "/runs/writetrain/GroundTruth.pvp "
                  .. runName .. "/groundtruth/train_gt.pvp");
 end
@@ -122,8 +122,8 @@ if not singlePhase or phaseToRun == 2 then
             .. "mv " .. layerName .. ".pvp "
                      .. runName .. "/runs/writetest");
       end
-      print("Copying " .. layerName .. ".pvp\n");
-      os.execute("cp "
+      print("Moving " .. layerName .. ".pvp\n");
+      os.execute("mv "
                  .. runName .. "/runs/writetest/" .. layerName .. ".pvp "
                  .. runName .. "/sparse/test");
    end
@@ -139,7 +139,7 @@ if not singlePhase or phaseToRun == 2 then
          .. "mv GroundTruth.pvp "
                   .. runName .. "/runs/writetest");
    end
-   os.execute("cp "
+   os.execute("mv "
                  .. runName .. "/runs/writetest/GroundTruth.pvp "
                  .. runName .. "/groundtruth/test_gt.pvp");
 end
