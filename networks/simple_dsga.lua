@@ -34,7 +34,7 @@ mpiBatchWidth    = 4;
 -- at the end. This script expects the network params
 -- file to use the table params.
 paramsFile = "subnets/dsga_2.lua";
-classifier = "subnets/maxpool_mlp.lua";
+classifier = "subnets/linear_classifier.lua"; --maxpool_mlp.lua";
 
 -- Global Configuration
 runVersion = 1;
@@ -44,7 +44,7 @@ displayPeriod   = 250;
 columnWidth      = 32;
 columnHeight     = 32;
 
-local augmentation = 1;
+local augmentation = 2;
 inputTrainFiles = 50000 * augmentation;
 inputTestFiles  = 10000;
 

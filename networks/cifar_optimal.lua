@@ -16,18 +16,18 @@ pathToSource =
       .. "/workspace/OpenPV";
 
 -- Threads / Rows / Columns for sparse coding
-numSparseThreads = 2;
+numSparseThreads = 1;
 numSparseRows    = 2;
 numSparseCols    = 2;
 numSparseBatches = 40;
 
 -- Threads / Rows / Columns for classifier
-numClassThreads  = 8;
+numClassThreads  = 5;
 numClassRows     = 1;
 numClassCols     = 1;
 numClassBatches  = 40;
 
-mpiBatchWidth = 4;
+mpiBatchWidth = 8;
 
 -- The network params file should use the values below.
 -- The params file should *not* call pv.printConsole()
@@ -36,16 +36,16 @@ mpiBatchWidth = 4;
 paramsFile = "subnets/basic_lca.lua";
 classifier = "subnets/maxpool_mlp.lua";
 
-runVersion    = 2;
+runVersion    = 4;
 runName       = "cifar_optimal_" .. runVersion;
 
 
-globalDictionarySize = 256;
-globalVThresh = 0.1;
-globalPatchSize = 13;
+globalDictionarySize = 128;
+globalVThresh = 0.075 * 0.5;
+globalPatchSize = 9;
 
-augmentation = 4;
-displayPeriod = 250 * 2;
+augmentation = 2;
+displayPeriod = 250;
 columnWidth   = 32;
 columnHeight  = 32;
 

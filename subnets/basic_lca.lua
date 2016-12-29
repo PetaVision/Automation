@@ -25,7 +25,7 @@ if globalVThresh ~= nil then
    VThresh = globalVThresh;
 end
 
-local dWMax            = 0.01;
+local dWMax            = 0.025;
 local momentumTau      = 500;
 local AMin             = 0;
 local AMax             = infinity;

@@ -8,7 +8,7 @@ local maxPoolY          = 4; --8
 local hiddenXScale      = 1; --0.5 -- This scale is relative to the maxPool dimensions
 local hiddenYScale      = 1; --0.5 
 local nbatch            = numClassBatches;
-local learningRate      = 0.0001 * 0.3;
+local learningRate      = 0.0001 * 0.5;
 local rateFactor        = 0.5; --0.25; -- Hidden layers learn at this rate relative to the learning rate
 
 -- Scale hidden feature count along with LCA feature count
@@ -575,13 +575,13 @@ for index, layerName in pairs(layersToClassify) do
                groupType               = connectionType;
                momentumMethod          = momentumType;
                momentumTau             = momentum;
-               momentumDecay           = decayFactor * rateFactor * learningRate;
+               momentumDecay           = decayFactor * learningRate;
                channelCode             = -1;
                preLayerName            = maxPoolLayerName;
                postLayerName           = "SimpleEstimateError";
                plasticityFlag          = true;
-               nxp                     = hiddenPatch;
-               nyp                     = hiddenPatch;
+               nxp                     = 1;
+               nyp                     = 1;
                nfp                     = numCategories;
                dWMax                   = learningRate;
                weightInitType          = "GaussianRandomWeight";
