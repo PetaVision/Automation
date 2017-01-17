@@ -18,7 +18,7 @@ end
 local cdPre  = "cd " .. runName .. "; ";
 
 -- Run train classifier
-if not singlePhase or phaseToRun == 3 then
+if not singlePhase or phaseToRun == 4 then
    os.execute(cdPre .. mpiPreClass .. pathToBinary
               .. " -p params/trainclassify.params"
               .. " -t " .. numClassThreads .. mpiPostClass);
@@ -37,7 +37,7 @@ if not singlePhase or phaseToRun == 3 then
    end
 end
 
-if not singlePhase or phaseToRun == 4 then
+if not singlePhase or phaseToRun == 5 then
    -- Get score on train set
    os.execute(cdPre .. pathToBinary
               .. " -p params/scoretrain.params"

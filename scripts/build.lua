@@ -160,6 +160,7 @@ end
 for index, layerName in pairs(layersToClassify) do
    params[layerName].initialWriteTime = displayPeriod;
    params[layerName].writeStep        = displayPeriod;
+   params[layerName].batchMethod = "byFile";
 end
 
 if generateGroundTruth then
@@ -227,8 +228,80 @@ command =
       .. " " .. paramsDir;
 os.execute(command);
 
+---------------------------------------------------------------
+-- Fourth run (write maxpooled version of train sparse code) --
+---------------------------------------------------------------
+
+params = dofile("subnets/write_maxpool.lua");
+suffix = "writemaxtrain";
+params.column.outputPath = "runs/" .. suffix;
+params.column.checkpointWriteDir = params.column.outputPath .. "/checkpoints";
+params.column.lastCheckpointDir = params.column.checkpointWriteDir .. "/last"; 
+params.column.printParamsFilename = suffix .. ".params";
+params.column.checkpointWriteStepInterval = inputTrainFiles / params.column.nbatch;
+params.column.stopTime = params.column.checkpointWriteStepInterval;
+
+for index, layerName in pairs(layersToClassify) do
+   params[layerName].inputPath = "sparse/train/"
+                                 .. layerName .. ".pvp";
+end
+
+
+-- Write the file and run it through PV with the dry run flag
+file = io.open(paramsDir .. params.column.printParamsFilename, "w");
+io.output(file);
+pv.printConsole(params);
+io.close(file);
+
+command = 
+      "cd " .. runName .. "; "
+      .. pathToBinary .. " -p "
+      .. "params/" .. params.column.printParamsFilename
+      .. " -n; "
+      .. "cd -; cp "
+      .. runName .. "/runs/" .. suffix .. "/"
+      .. params.column.printParamsFilename
+      .. " " .. paramsDir;
+os.execute(command);
+
+-------------------------------------------------------------
+-- Fifth run (write maxpooled version of test sparse code) --
+-------------------------------------------------------------
+
+params = dofile("subnets/write_maxpool.lua");
+suffix = "writemaxtest";
+params.column.outputPath = "runs/" .. suffix;
+params.column.checkpointWriteDir = params.column.outputPath .. "/checkpoints";
+params.column.lastCheckpointDir = params.column.checkpointWriteDir .. "/last"; 
+params.column.printParamsFilename = suffix .. ".params";
+params.column.checkpointWriteStepInterval = inputTestFiles / params.column.nbatch;
+params.column.stopTime = params.column.checkpointWriteStepInterval;
+
+for index, layerName in pairs(layersToClassify) do
+   params[layerName].inputPath = "sparse/test/"
+                                 .. layerName .. ".pvp";
+end
+
+
+-- Write the file and run it through PV with the dry run flag
+file = io.open(paramsDir .. params.column.printParamsFilename, "w");
+io.output(file);
+pv.printConsole(params);
+io.close(file);
+
+command = 
+      "cd " .. runName .. "; "
+      .. pathToBinary .. " -p "
+      .. "params/" .. params.column.printParamsFilename
+      .. " -n; "
+      .. "cd -; cp "
+      .. runName .. "/runs/" .. suffix .. "/"
+      .. params.column.printParamsFilename
+      .. " " .. paramsDir;
+os.execute(command);
+
 ------------------------------------------------------------------
--- Fourth run (train classifier on sparse code of training set) --
+-- Fifth run (train classifier on sparse code of training set) --
 ------------------------------------------------------------------
 
 params = dofile(classifier);
@@ -254,7 +327,7 @@ params.GroundTruth.inputPath = "groundtruth/train_gt.pvp";
 
 for index, layerName in pairs(layersToClassify) do
    params[layerName].inputPath = "sparse/train/"
-                                 .. layerName .. ".pvp";
+                                 .. layerName .. "MaxPool.pvp";
 end
 
 -- Write the file and run it through PV with the dry run flag
@@ -276,7 +349,7 @@ os.execute(command);
 
 
 -----------------------------------------------------------
--- Fifth run (score classifier on sparse code of train set) --
+-- Sixth run (score classifier on sparse code of train set) --
 -----------------------------------------------------------
 
 suffix = "scoretrain";
@@ -285,7 +358,7 @@ params.column.checkpointWriteDir  = params.column.outputPath .. "/checkpoints";
 params.column.lastCheckpointDir   = params.column.checkpointWriteDir .. "/last"
 params.column.printParamsFilename = suffix .. ".params";
 params.column.checkpointWrite     = false;
-params.column.stopTime            = inputTrainFiles / params.column.nbatch;
+params.column.stopTime            = (inputTrainFiles / augmentation) / params.column.nbatch;
 
 for k, v in pairs(params) do
    if v.plasticityFlag == true then
@@ -299,7 +372,7 @@ end
 
 for index, layerName in pairs(layersToClassify) do
    params[layerName].inputPath = "sparse/train/"
-                                 .. layerName .. ".pvp";
+                                 .. layerName .. "MaxPool.pvp";
    params[layerName].batchMethod = "byFile";
 end
 
@@ -338,7 +411,7 @@ command =
 os.execute(command);
 
 -----------------------------------------------------------
--- Sixth run (run classifier on sparse code of test set) --
+-- Seventh run (run classifier on sparse code of test set) --
 -----------------------------------------------------------
 
 suffix = "testclassify";
@@ -351,7 +424,7 @@ params.column.stopTime            = inputTestFiles / params.column.nbatch;
 
 for index, layerName in pairs(layersToClassify) do
    params[layerName].inputPath = "sparse/test/"
-                                 .. layerName .. ".pvp";
+                                 .. layerName .. "MaxPool.pvp";
    params[layerName].batchMethod = "byFile";
 end
 

@@ -73,7 +73,7 @@ if not singlePhase or phaseToRun == 1 then
                .. runName .. "/runs/writetrain/', '"
                .. layerName .. "', "
                .. numSparseBatches .. "', '"
-               .. inputLayerBatchMethods[1] .. "', "
+               .. "byFile', "
                .. mpiBatchWidth .. ", "
                .. inputTrainFiles .. ");\"; "
             .. "mv " .. layerName .. ".pvp "
@@ -90,7 +90,7 @@ if not singlePhase or phaseToRun == 1 then
             .. "combinebatches('"
             .. runName .. "/runs/writetrain/', 'GroundTruth', "
             .. numSparseBatches .. "', '"
-            .. inputLayerBatchMethods[1] .. "', "
+            .. "byFile', "
             .. mpiBatchWidth .. ", "
             .. inputTrainFiles .. ");\"");
       os.execute("mv GroundTruth.pvp "
@@ -116,7 +116,7 @@ if not singlePhase or phaseToRun == 2 then
                .. runName .. "/runs/writetest/', '"
                .. layerName .. "', "
                .. numSparseBatches .. "', '"
-               .. inputLayerBatchMethods[1] .. "', "
+               .. "byFile', "
                .. mpiBatchWidth .. ", "
                .. inputTestFiles .. ");\"; "
             .. "mv " .. layerName .. ".pvp "
@@ -133,7 +133,7 @@ if not singlePhase or phaseToRun == 2 then
             .. "combinebatches('"
             .. runName .. "/runs/writetest/', 'GroundTruth', "
             .. numSparseBatches .. "', '"
-            .. inputLayerBatchMethods[1] .. "', "
+            .. "byFile', "
             .. mpiBatchWidth .. ", "
             .. inputTestFiles .. ");\"; "
          .. "mv GroundTruth.pvp "
@@ -142,4 +142,57 @@ if not singlePhase or phaseToRun == 2 then
    os.execute("mv "
                  .. runName .. "/runs/writetest/GroundTruth.pvp "
                  .. runName .. "/groundtruth/test_gt.pvp");
+end
+
+-- Write Maxpooled Test / Train
+if not singlePhase or phaseToRun == 3 then
+   os.execute(cdPre .. mpiPreSparse .. pathToBinary
+              .. " -p params/writemaxtrain.params"
+              .. " -t " .. numSparseThreads .. mpiPostSparse);
+   
+   -- Copy output files and rename ground truth if generated
+   for index, layerName in pairs(layersToClassify) do
+      if mpiBatchWidth > 1 then
+         print("Merging batched files for " .. layerName .. "\n");
+         os.execute("octave --eval \""
+               .. "combinebatches('"
+               .. runName .. "/runs/writemaxtrain/', '"
+               .. layerName .. "MaxPool', "
+               .. numSparseBatches .. "', '"
+               .. "'byFile', "
+               .. mpiBatchWidth .. ", "
+               .. inputTestFiles .. ");\"; "
+            .. "mv " .. layerName .. ".pvp "
+                     .. runName .. "/runs/writemaxtrain");
+      end
+      print("Moving " .. layerName .. "MaxPool.pvp\n");
+      os.execute("mv "
+                 .. runName .. "/runs/writemaxtrain/" .. layerName .. "MaxPool.pvp "
+                 .. runName .. "/sparse/test");
+   end
+
+   os.execute(cdPre .. mpiPreSparse .. pathToBinary
+              .. " -p params/writemaxtest.params"
+              .. " -t " .. numSparseThreads .. mpiPostSparse);
+   
+   -- Copy output files and rename ground truth if generated
+   for index, layerName in pairs(layersToClassify) do
+      if mpiBatchWidth > 1 then
+         print("Merging batched files for " .. layerName .. "\n");
+         os.execute("octave --eval \""
+               .. "combinebatches('"
+               .. runName .. "/runs/writemaxtest/', '"
+               .. layerName .. "MaxPool', "
+               .. numSparseBatches .. "', '"
+               .. "'byFile', "
+               .. mpiBatchWidth .. ", "
+               .. inputTestFiles .. ");\"; "
+            .. "mv " .. layerName .. ".pvp "
+                     .. runName .. "/runs/writemaxtest");
+      end
+      print("Moving " .. layerName .. "MaxPool.pvp\n");
+      os.execute("mv "
+                 .. runName .. "/runs/writemaxtrain/" .. layerName .. "MaxPool.pvp "
+                 .. runName .. "/sparse/test");
+   end
 end
