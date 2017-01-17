@@ -20,7 +20,7 @@ local pvWriteMaxpool = {
 };
 
 for index, layerName in pairs(layersToClassify) do
-   pv.addGroup(pvClassifier, layerName, {
+   pv.addGroup(pvWriteMaxpool, layerName, {
             groupType              = "PvpLayer";
             nxScale                = layersToClassifyXScale[layerName];
             nyScale                = layersToClassifyYScale[layerName];
@@ -37,7 +37,7 @@ for index, layerName in pairs(layersToClassify) do
          }
       );
 
-   pv.addGroup(pvClassifier, layerName .. "MaxPool", {
+   pv.addGroup(pvWriteMaxpool, layerName .. "MaxPool", {
             groupType          = "HyPerLayer";
             nxScale            = maxPoolX / columnWidth;
             nyScale            = maxPoolY / columnHeight;
@@ -55,7 +55,7 @@ for index, layerName in pairs(layersToClassify) do
          }
       );
 
-   pv.addGroup(pvClassifier, layerName .. "To" .. maxPoolLayerName, {
+   pv.addGroup(pvWriteMaxpool, layerName .. "To" .. maxPoolLayerName, {
             groupType             = "PoolingConn";
             channelCode           = 0;
             preLayerName          = layerName;
@@ -70,4 +70,4 @@ for index, layerName in pairs(layersToClassify) do
       );
 end
 
-
+return pvWriteMaxpool;
