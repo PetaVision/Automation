@@ -1,46 +1,3 @@
-------------
--- Params --
-------------
-
-local featureMult       = 1;
-local maxPoolX          = 4; --8
-local maxPoolY          = 4; --8
-local hiddenXScale      = 1; --0.5 -- This scale is relative to the maxPool dimensions
-local hiddenYScale      = 1; --0.5 
-local nbatch            = numClassBatches;
-local learningRate      = 0.0001 * 0.5;
-local rateFactor        = 0.5; --0.25; -- Hidden layers learn at this rate relative to the learning rate
-
--- Scale hidden feature count along with LCA feature count
-local hiddenFeatures    = 64 * featureMult;
-if globalDictionarySize ~= nil then
-   hiddenFeatures = globalDictionarySize * featureMult;
-end
-
-local useGpu            = true;
-local weightStd         = 0.01;
-local hiddenPatch       = 1; --2;
-local connectionType    = "MomentumConn";
-local momentumType      = "simple";
-local momentum          = 0.5;
-local decayFactor       = 0.01; -- momentum decay is factor * learningRate for each conn
-local biasValue         = 1.0;
-local inputDropout      = 25;
-local hiddenDropout     = 50;
-local normType          = "none";
-local normStrength      = 0.1;
-local normDW            = false; 
-local sharedWeights     = true;
-local debugWriteStep    = -1;
-local allHiddenLayer    = true;
-local allHiddenFeatures = hiddenFeatures * 2;
-
--- If this flag is true, the network trains an additional classifier
--- using the max pool layers as input to a softmax
-if enableSimpleClassifier == nil then
-   enableSimpleClassifier = true;
-end
-
 
 ------------
 -- Column --
@@ -363,7 +320,11 @@ if allHiddenLayer then
             nyp                     = 1;
             nfp                     = numCategories;
             dWMax                   = learningRate;
-            weightInitType          = "GaussianRandomWeight";
+            weightInitType          = "UniformRandomWeight";
+            wMinInit = -weightStd;
+            wMaxInit = weightStd;
+            sparseFraction = 0.9;
+            minNNZ = 1; 
             wGaussMean              = 0;
             wGaussStdev             = weightStd;
             normalizeMethod         = normType;
@@ -485,7 +446,12 @@ for index, layerName in pairs(layersToClassify) do
                nyp                     = 1;
                nfp                     = allHiddenFeatures;
                dWMax                   = learningRate;
-               weightInitType          = "GaussianRandomWeight";
+            weightInitType          = "UniformRandomWeight";
+            wMinInit = -weightStd;
+            wMaxInit = weightStd;
+            sparseFraction = 0.9;
+            minNNZ = 1; 
+ --               weightInitType          = "GaussianRandomWeight";
                wGaussMean              = 0;
                wGaussStdev             = weightStd;
                normalizeMethod         = normType;
@@ -533,7 +499,12 @@ for index, layerName in pairs(layersToClassify) do
                nyp                     = 1;
                nfp                     = numCategories;
                dWMax                   = learningRate;
-               weightInitType          = "GaussianRandomWeight";
+            weightInitType          = "UniformRandomWeight";
+            wMinInit = -weightStd;
+            wMaxInit = weightStd;
+            sparseFraction = 0.9;
+            minNNZ = 1; 
+ --               weightInitType          = "GaussianRandomWeight";
                wGaussMean              = 0;
                wGaussStdev             = weightStd;
                normalizeMethod         = normType;
@@ -584,7 +555,13 @@ for index, layerName in pairs(layersToClassify) do
                nyp                     = 1;
                nfp                     = numCategories;
                dWMax                   = learningRate;
-               weightInitType          = "GaussianRandomWeight";
+            weightInitType          = "UniformRandomWeight";
+            wMinInit = -weightStd;
+            wMaxInit = weightStd;
+            sparseFraction = 0.9;
+            minNNZ = 1; 
+         updateGSynFromPostPerspective = true;
+ --               weightInitType          = "GaussianRandomWeight";
                wGaussMean              = 0;
                wGaussStdev             = weightStd;
                receiveGpu              = useGpu;
@@ -603,6 +580,7 @@ for index, layerName in pairs(layersToClassify) do
                channelCode      = 0;
                preLayerName     = maxPoolLayerName;
                postLayerName    = "SimpleCategoryEstimate";
+         updateGSynFromPostPerspective = true;
                writeStep        = -1;
                initialWriteTime = -1;
                originalConnName = maxPoolLayerName .. "ToSimpleEstimateError";
@@ -632,11 +610,17 @@ for index, layerName in pairs(layersToClassify) do
             preLayerName            = maxPoolLayerName;
             postLayerName           = layerName .. "HiddenError";
             plasticityFlag          = true;
+         updateGSynFromPostPerspective = true;
             nxp                     = hiddenPatch;
             nyp                     = hiddenPatch;
             nfp                     = hiddenFeatures;
             dWMax                   = rateFactor * learningRate;
-            weightInitType          = "GaussianRandomWeight";
+            weightInitType          = "UniformRandomWeight";
+            wMinInit = -weightStd;
+            wMaxInit = weightStd;
+            sparseFraction = 0.9;
+            minNNZ = 1; 
+ --            weightInitType          = "GaussianRandomWeight";
             wGaussMean              = 0;
             wGaussStdev             = weightStd;
             receiveGpu              = useGpu;

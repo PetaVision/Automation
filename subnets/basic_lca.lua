@@ -30,8 +30,8 @@ local momentumTau      = 500;
 local AMin             = 0;
 local AMax             = infinity;
 local AShift           = 0;
-local VWidth           = 0; 
-local timeConstantTau  = 125;
+local VWidth           = 0;
+local timeConstantTau  = 1000; --125;
 local weightInit       = 1.0;
 local sparseFraction   = 0.975;
 
@@ -114,7 +114,7 @@ pv.addGroup(pvParams, "S1", {
          VWidth                 = VWidth;
          timeConstantTau        = timeConstantTau;
          selfInteract           = true;
-         adaptiveTimeScaleProbe = "AdaptProbe";
+         adaptiveTimeScaleProbe = nil;-- "AdaptProbe";
       }
    );
 

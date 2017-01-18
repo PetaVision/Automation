@@ -268,7 +268,6 @@ os.execute(command);
 -- Fifth run (write maxpooled version of test sparse code) --
 -------------------------------------------------------------
 
-params = dofile("subnets/write_maxpool.lua");
 suffix = "writemaxtest";
 params.column.outputPath = "runs/" .. suffix;
 params.column.checkpointWriteDir = params.column.outputPath .. "/checkpoints";
@@ -358,7 +357,7 @@ params.column.checkpointWriteDir  = params.column.outputPath .. "/checkpoints";
 params.column.lastCheckpointDir   = params.column.checkpointWriteDir .. "/last"
 params.column.printParamsFilename = suffix .. ".params";
 params.column.checkpointWrite     = false;
-params.column.stopTime            = (inputTrainFiles / augmentation) / params.column.nbatch;
+params.column.stopTime            = inputTrainFiles / params.column.nbatch;
 
 for k, v in pairs(params) do
    if v.plasticityFlag == true then

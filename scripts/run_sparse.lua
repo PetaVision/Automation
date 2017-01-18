@@ -159,16 +159,16 @@ if not singlePhase or phaseToRun == 3 then
                .. runName .. "/runs/writemaxtrain/', '"
                .. layerName .. "MaxPool', "
                .. numSparseBatches .. "', '"
-               .. "'byFile', "
+               .. "byFile', "
                .. mpiBatchWidth .. ", "
                .. inputTestFiles .. ");\"; "
-            .. "mv " .. layerName .. ".pvp "
+            .. "mv " .. layerName .. "MaxPool.pvp "
                      .. runName .. "/runs/writemaxtrain");
       end
       print("Moving " .. layerName .. "MaxPool.pvp\n");
       os.execute("mv "
                  .. runName .. "/runs/writemaxtrain/" .. layerName .. "MaxPool.pvp "
-                 .. runName .. "/sparse/test");
+                 .. runName .. "/sparse/train");
    end
 
    os.execute(cdPre .. mpiPreSparse .. pathToBinary
@@ -184,15 +184,15 @@ if not singlePhase or phaseToRun == 3 then
                .. runName .. "/runs/writemaxtest/', '"
                .. layerName .. "MaxPool', "
                .. numSparseBatches .. "', '"
-               .. "'byFile', "
+               .. "byFile', "
                .. mpiBatchWidth .. ", "
                .. inputTestFiles .. ");\"; "
-            .. "mv " .. layerName .. ".pvp "
+            .. "mv " .. layerName .. "MaxPool.pvp "
                      .. runName .. "/runs/writemaxtest");
       end
       print("Moving " .. layerName .. "MaxPool.pvp\n");
       os.execute("mv "
-                 .. runName .. "/runs/writemaxtrain/" .. layerName .. "MaxPool.pvp "
+                 .. runName .. "/runs/writemaxtest/" .. layerName .. "MaxPool.pvp "
                  .. runName .. "/sparse/test");
    end
 end

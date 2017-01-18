@@ -31,8 +31,8 @@ for index, layerName in pairs(layersToClassify) do
             writeStep              = -1;
             initialWriteTime       = -1;
             resetToStartOnLoop     = false;
-            normalizeLuminanceFlag = true;
-            normalizeStdDev        = true;
+            normalizeLuminanceFlag = false;
+            normalizeStdDev        = false;
             InitVType              = "ZeroV";
          }
       );
@@ -55,7 +55,7 @@ for index, layerName in pairs(layersToClassify) do
          }
       );
 
-   pv.addGroup(pvWriteMaxpool, layerName .. "To" .. maxPoolLayerName, {
+   pv.addGroup(pvWriteMaxpool, layerName .. "To" .. layerName .. "MaxPool", {
             groupType             = "PoolingConn";
             channelCode           = 0;
             preLayerName          = layerName;
