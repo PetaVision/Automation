@@ -1,50 +1,50 @@
 #!/usr/bin/lua
 
-if mpiBatchWidth == nil or mpiBatchWidth < 1 then
+if runConfig.mpiBatchWidth == nil or runConfig.mpiBatchWidth < 1 then
    print("Using default batchWidth of 1");
-   mpiBatchWidth = 1;
+   runConfig.mpiBatchWidth = 1;
 end
 
 local mpiPreClass  = "";
 local mpiPostClass = "";
-local mpiClassProcs = numClassCols * numClassCols * mpiBatchWidth;
+local mpiClassProcs = runConfig.numClassCols * runConfig.numClassCols * runConfig.mpiBatchWidth;
 if mpiClassProcs > 1 then
    mpiPreClass  = "mpiexec -np " .. mpiClassProcs .. " ";
-   mpiPostClass = " -rows " .. numClassRows
-               .. " -columns " .. numClassCols
-               .. " -batchwidth " .. mpiBatchWidth;
+   mpiPostClass = " -rows " .. runConfig.numClassRows
+               .. " -columns " .. runConfig.numClassCols
+               .. " -batchwidth " .. runConfig.mpiBatchWidth;
 end
 
-local cdPre  = "cd " .. runName .. "; ";
+local cdPre  = "cd " .. runConfig.runName .. "; ";
 
 -- Run train classifier
 if not singlePhase or phaseToRun == 4 then
-   os.execute(cdPre .. mpiPreClass .. pathToBinary
+   os.execute(cdPre .. mpiPreClass .. runConfig.pathToBinary
               .. " -p params/trainclassify.params"
-              .. " -t " .. numClassThreads .. mpiPostClass);
+              .. " -t " .. runConfig.numClassThreads .. mpiPostClass);
    
    -- Copy learned weights
-   if mpiBatchWidth > 1 then
+   if runConfig.mpiBatchWidth > 1 then
       os.execute("cp "
-            .. runName .. "/runs/trainclassify/batchsweep_00/*.pvp "
-            .. runName .. "/weights; "
-            .. "cd " .. runName .. "/weights; "
+            .. runConfig.runName .. "/runs/trainclassify/batchsweep_00/*.pvp "
+            .. runConfig.runName .. "/weights; "
+            .. "cd " .. runConfig.runName .. "/weights; "
             .. "rename 's/_0\\.pvp/\\.pvp/' *.pvp"); -- Rename Weights_0.pvp to Weights.pvp
    else
       os.execute("cp "
-            .. runName .. "/runs/trainclassify/*.pvp "
-            .. runName .. "/weights");
+            .. runConfig.runName .. "/runs/trainclassify/*.pvp "
+            .. runConfig.runName .. "/weights");
    end
 end
 
 if not singlePhase or phaseToRun == 5 then
    -- Get score on train set
-   os.execute(cdPre .. pathToBinary
+   os.execute(cdPre .. runConfig.pathToBinary
               .. " -p params/scoretrain.params"
-              .. " -t " .. numClassThreads);
+              .. " -t " .. runConfig.numClassThreads);
    
    -- Get score on test set
-   os.execute(cdPre .. pathToBinary
+   os.execute(cdPre .. runConfig.pathToBinary
               .. " -p params/testclassify.params"
-              .. " -t " .. numClassThreads);
+              .. " -t " .. runConfig.numClassThreads);
 end   

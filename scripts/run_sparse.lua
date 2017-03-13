@@ -1,56 +1,56 @@
 #!/usr/bin/lua
 
-if mpiBatchWidth == nil or mpiBatchWidth < 1 then
+if runConfig.mpiBatchWidth == nil or runConfig.mpiBatchWidth < 1 then
    print("Using default batchWidth of 1");
-   mpiBatchWidth = 1;
+   runConfig.mpiBatchWidth = 1;
 end
 
 local mpiPreSparse  = "";
 local mpiPostSparse = "";
-local mpiSparseProcs      = numSparseRows * numSparseCols * mpiBatchWidth;
+local mpiSparseProcs      = runConfig.numSparseRows * runConfig.numSparseCols * runConfig.mpiBatchWidth;
 if mpiSparseProcs > 1 then
    mpiPreSparse  = "mpiexec -np " .. mpiSparseProcs .. " ";
-   mpiPostSparse = " -rows " .. numSparseRows
-                .. " -columns " .. numSparseCols
-                .. " -batchwidth " .. mpiBatchWidth;
+   mpiPostSparse = " -rows " .. runConfig.numSparseRows
+                .. " -columns " .. runConfig.numSparseCols
+                .. " -batchwidth " .. runConfig.mpiBatchWidth;
 end
 
 local mpiPreClass  = "";
 local mpiPostClass = "";
-local mpiClassProcs = numClassCols * numClassCols * mpiBatchWidth;
+local mpiClassProcs = runConfig.numClassCols * runConfig.numClassCols * runConfig.mpiBatchWidth;
 if mpiClassProcs > 1 then
    mpiPreClass  = "mpiexec -np " .. mpiClassProcs .. " ";
-   mpiPostClass = " -rows " .. numClassRows
-               .. " -columns " .. numClassCols
-               .. " -batchwidth " .. mpiBatchWidth;
+   mpiPostClass = " -rows " .. runConfig.numClassRows
+               .. " -columns " .. runConfig.numClassCols
+               .. " -batchwidth " .. runConfig.mpiBatchWidth;
 end
 
-local cdPre  = "cd " .. runName .. "; ";
+local cdPre  = "cd " .. runConfig.runName .. "; ";
 
 
 
 -- Run inital training
 if not singlePhase or phaseToRun == 0 then
-   os.execute(cdPre .. mpiPreSparse .. pathToBinary
+   os.execute(cdPre .. mpiPreSparse .. runConfig.pathToBinary
            .. " -p params/learndictionary.params"
-           .. " -t " .. numSparseThreads .. mpiPostSparse);
+           .. " -t " .. runConfig.numSparseThreads .. mpiPostSparse);
 
    ---- Copy dictionary to dictionary directory
-   for index, connName in pairs(plasticConns) do
+   for index, connName in pairs(runParams.plasticConns) do
       print("Copying " .. connName .. ".pvp\n");
       if mpiBatchWidth == 1 then
          os.execute("cp "
-                 .. runName .. "/runs/learndictionary/" .. connName .. ".pvp "
-                 .. runName .. "/dictionary");
+                 .. runConfig.runName .. "/runs/learndictionary/" .. connName .. ".pvp "
+                 .. runConfig.runName .. "/dictionary");
       else
          os.execute("cp "
-                 .. runName .. "/runs/learndictionary/batchsweep_00/" .. connName .. ".pvp "
-                 .. runName .. "/dictionary/" .. connName .. ".pvp");
+                 .. runConfig.runName .. "/runs/learndictionary/batchsweep_00/" .. connName .. ".pvp "
+                 .. runConfig.runName .. "/dictionary/" .. connName .. ".pvp");
        end
    end
 end
 
-if generateGroundTruth then
+if runParams.generateGroundTruth then
    -- If we have a FilenameParsingGroundTruthLayer,
    -- we can't split into rows / cols
    mpiPreSparse     = mpiPreClass;
@@ -60,139 +60,139 @@ end
 
 ---- Run write train set
 if not singlePhase or phaseToRun == 1 then
-   os.execute(cdPre .. mpiPreSparse .. pathToBinary
+   os.execute(cdPre .. mpiPreSparse .. runConfig.pathToBinary
               .. " -p params/writetrain.params"
-              .. " -t " .. numSparseThreads .. mpiPostSparse);
+              .. " -t " .. runConfig.numSparseThreads .. mpiPostSparse);
    
    -- Move output files and rename ground truth if generated
-   for index, layerName in pairs(layersToClassify) do
-      if mpiBatchWidth > 1 then
+   for index, layerName in pairs(runParams.layersToClassify) do
+      if runConfig.mpiBatchWidth > 1 then
          print("Merging batched files for " .. layerName .. "\n");
          os.execute("octave --eval \""
                .. "combinebatches('"
-               .. runName .. "/runs/writetrain/', '"
+               .. runConfig.runName .. "/runs/writetrain/', '"
                .. layerName .. "', "
-               .. numSparseBatches .. "', '"
+               .. runConfig.numSparseBatches .. "', '"
                .. "byFile', "
-               .. mpiBatchWidth .. ", "
-               .. inputTrainFiles .. ");\"; "
+               .. runConfig.mpiBatchWidth .. ", "
+               .. runParams.inputTrainFiles .. ");\"; "
             .. "mv " .. layerName .. ".pvp "
-                     .. runName .. "/runs/writetrain");
+                     .. runConfig.runName .. "/runs/writetrain");
       end
       print("Moving " .. layerName .. ".pvp\n");
       os.execute("mv "
-                 .. runName .. "/runs/writetrain/" .. layerName .. ".pvp "
-                 .. runName .. "/sparse/train");
+                 .. runConfig.runName .. "/runs/writetrain/" .. layerName .. ".pvp "
+                 .. runConfig.runName .. "/sparse/train");
    end
    
-   if mpiBatchWidth > 1 then
+   if runConfig.mpiBatchWidth > 1 then
       os.execute("octave --eval \""
             .. "combinebatches('"
-            .. runName .. "/runs/writetrain/', 'GroundTruth', "
-            .. numSparseBatches .. "', '"
+            .. runConfig.runName .. "/runs/writetrain/', 'GroundTruth', "
+            .. runConfig.numSparseBatches .. "', '"
             .. "byFile', "
-            .. mpiBatchWidth .. ", "
-            .. inputTrainFiles .. ");\"");
+            .. runConfig.mpiBatchWidth .. ", "
+            .. runParams.inputTrainFiles .. ");\"");
       os.execute("mv GroundTruth.pvp "
-                  .. runName .. "/runs/writetrain");
+                  .. runConfig.runName .. "/runs/writetrain");
    end
    os.execute("mv "
-                 .. runName .. "/runs/writetrain/GroundTruth.pvp "
-                 .. runName .. "/groundtruth/train_gt.pvp");
+                 .. runConfig.runName .. "/runs/writetrain/GroundTruth.pvp "
+                 .. runConfig.runName .. "/groundtruth/train_gt.pvp");
 end
 
 -- Run write test set
 if not singlePhase or phaseToRun == 2 then
-   os.execute(cdPre .. mpiPreSparse .. pathToBinary
+   os.execute(cdPre .. mpiPreSparse .. runConfig.pathToBinary
               .. " -p params/writetest.params"
-              .. " -t " .. numSparseThreads .. mpiPostSparse);
+              .. " -t " .. runConfig.numSparseThreads .. mpiPostSparse);
    
    -- Copy output files and rename ground truth if generated
-   for index, layerName in pairs(layersToClassify) do
-      if mpiBatchWidth > 1 then
+   for index, layerName in pairs(runParams.layersToClassify) do
+      if runConfig.mpiBatchWidth > 1 then
          print("Merging batched files for " .. layerName .. "\n");
          os.execute("octave --eval \""
                .. "combinebatches('"
-               .. runName .. "/runs/writetest/', '"
+               .. runConfig.runName .. "/runs/writetest/', '"
                .. layerName .. "', "
-               .. numSparseBatches .. "', '"
+               .. runConfig.numSparseBatches .. "', '"
                .. "byFile', "
-               .. mpiBatchWidth .. ", "
-               .. inputTestFiles .. ");\"; "
+               .. runConfig.mpiBatchWidth .. ", "
+               .. runParams.inputTestFiles .. ");\"; "
             .. "mv " .. layerName .. ".pvp "
-                     .. runName .. "/runs/writetest");
+                     .. runConfig.runName .. "/runs/writetest");
       end
       print("Moving " .. layerName .. ".pvp\n");
       os.execute("mv "
-                 .. runName .. "/runs/writetest/" .. layerName .. ".pvp "
-                 .. runName .. "/sparse/test");
+                 .. runConfig.runName .. "/runs/writetest/" .. layerName .. ".pvp "
+                 .. runConfig.runName .. "/sparse/test");
    end
    
-   if mpiBatchWidth > 1 then
+   if runConfig.mpiBatchWidth > 1 then
       os.execute("octave --eval \""
             .. "combinebatches('"
-            .. runName .. "/runs/writetest/', 'GroundTruth', "
-            .. numSparseBatches .. "', '"
+            .. runConfig.runName .. "/runs/writetest/', 'GroundTruth', "
+            .. runConfig.numSparseBatches .. "', '"
             .. "byFile', "
-            .. mpiBatchWidth .. ", "
-            .. inputTestFiles .. ");\"; "
+            .. runConfig.mpiBatchWidth .. ", "
+            .. runParams.inputTestFiles .. ");\"; "
          .. "mv GroundTruth.pvp "
-                  .. runName .. "/runs/writetest");
+                  .. runConfig.runName .. "/runs/writetest");
    end
    os.execute("mv "
-                 .. runName .. "/runs/writetest/GroundTruth.pvp "
-                 .. runName .. "/groundtruth/test_gt.pvp");
+                 .. runConfig.runName .. "/runs/writetest/GroundTruth.pvp "
+                 .. runConfig.runName .. "/groundtruth/test_gt.pvp");
 end
 
 -- Write Maxpooled Test / Train
 if not singlePhase or phaseToRun == 3 then
-   os.execute(cdPre .. mpiPreSparse .. pathToBinary
+   os.execute(cdPre .. mpiPreSparse .. runConfig.pathToBinary
               .. " -p params/writemaxtrain.params"
-              .. " -t " .. numSparseThreads .. mpiPostSparse);
+              .. " -t " .. runConfig.numSparseThreads .. mpiPostSparse);
    
    -- Copy output files and rename ground truth if generated
-   for index, layerName in pairs(layersToClassify) do
-      if mpiBatchWidth > 1 then
+   for index, layerName in pairs(runParams.layersToClassify) do
+      if runConfig.mpiBatchWidth > 1 then
          print("Merging batched files for " .. layerName .. "\n");
          os.execute("octave --eval \""
                .. "combinebatches('"
-               .. runName .. "/runs/writemaxtrain/', '"
+               .. runConfig.runName .. "/runs/writemaxtrain/', '"
                .. layerName .. "MaxPool', "
-               .. numSparseBatches .. "', '"
+               .. runConfig.numSparseBatches .. "', '"
                .. "byFile', "
-               .. mpiBatchWidth .. ", "
-               .. inputTestFiles .. ");\"; "
+               .. runConfig.mpiBatchWidth .. ", "
+               .. runParams.inputTrainFiles .. ");\"; "
             .. "mv " .. layerName .. "MaxPool.pvp "
-                     .. runName .. "/runs/writemaxtrain");
+                     .. runConfig.runName .. "/runs/writemaxtrain");
       end
       print("Moving " .. layerName .. "MaxPool.pvp\n");
       os.execute("mv "
-                 .. runName .. "/runs/writemaxtrain/" .. layerName .. "MaxPool.pvp "
-                 .. runName .. "/sparse/train");
+                 .. runConfig.runName .. "/runs/writemaxtrain/" .. layerName .. "MaxPool.pvp "
+                 .. runConfig.runName .. "/sparse/train");
    end
 
-   os.execute(cdPre .. mpiPreSparse .. pathToBinary
+   os.execute(cdPre .. mpiPreSparse .. runConfig.pathToBinary
               .. " -p params/writemaxtest.params"
-              .. " -t " .. numSparseThreads .. mpiPostSparse);
+              .. " -t " .. runConfig.numSparseThreads .. mpiPostSparse);
    
    -- Copy output files and rename ground truth if generated
-   for index, layerName in pairs(layersToClassify) do
-      if mpiBatchWidth > 1 then
+   for index, layerName in pairs(runParams.layersToClassify) do
+      if runConfig.mpiBatchWidth > 1 then
          print("Merging batched files for " .. layerName .. "\n");
          os.execute("octave --eval \""
                .. "combinebatches('"
-               .. runName .. "/runs/writemaxtest/', '"
+               .. runConfig.runName .. "/runs/writemaxtest/', '"
                .. layerName .. "MaxPool', "
-               .. numSparseBatches .. "', '"
+               .. runConfig.numSparseBatches .. "', '"
                .. "byFile', "
-               .. mpiBatchWidth .. ", "
-               .. inputTestFiles .. ");\"; "
+               .. runConfig.mpiBatchWidth .. ", "
+               .. runParams.inputTestFiles .. ");\"; "
             .. "mv " .. layerName .. "MaxPool.pvp "
-                     .. runName .. "/runs/writemaxtest");
+                     .. runConfig.runName .. "/runs/writemaxtest");
       end
       print("Moving " .. layerName .. "MaxPool.pvp\n");
       os.execute("mv "
-                 .. runName .. "/runs/writemaxtest/" .. layerName .. "MaxPool.pvp "
-                 .. runName .. "/sparse/test");
+                 .. runConfig.runName .. "/runs/writemaxtest/" .. layerName .. "MaxPool.pvp "
+                 .. runConfig.runName .. "/sparse/test");
    end
 end

@@ -5,13 +5,13 @@
 local pvWriteMaxpool = {
    column = {
       groupType                  = "HyPerCol";
-      nx                         = columnWidth;
-      ny                         = columnHeight;
+      nx                         = runParams.columnWidth;
+      ny                         = runParams.columnHeight;
       startTime                  = 0;
       dt                         = 1; 
       progressInterval           = 100;
       randomSeed                 = 1234567890;
-      nbatch                     = nbatch;
+      nbatch                     = runConfig.numClassBatches;
       checkpointWrite            = false;
       checkpointWriteTriggerMode = "step";
       deleteOlderCheckpoints     = false;
@@ -19,12 +19,12 @@ local pvWriteMaxpool = {
    }
 };
 
-for index, layerName in pairs(layersToClassify) do
+for index, layerName in pairs(runParams.layersToClassify) do
    pv.addGroup(pvWriteMaxpool, layerName, {
             groupType              = "PvpLayer";
-            nxScale                = layersToClassifyXScale[layerName];
-            nyScale                = layersToClassifyYScale[layerName];
-            nf                     = layersToClassifyFeatures[layerName];
+            nxScale                = runParams.layersToClassifyXScale[layerName];
+            nyScale                = runParams.layersToClassifyYScale[layerName];
+            nf                     = runParams.layersToClassifyFeatures[layerName];
             phase                  = 0;
             displayPeriod          = 1;
             batchMethod            = "byFile";
@@ -39,18 +39,19 @@ for index, layerName in pairs(layersToClassify) do
 
    pv.addGroup(pvWriteMaxpool, layerName .. "MaxPool", {
             groupType          = "HyPerLayer";
-            nxScale            = maxPoolX / columnWidth;
-            nyScale            = maxPoolY / columnHeight;
-            nf                 = layersToClassifyFeatures[layerName];
+            nxScale            = runParams.maxPoolX / runParams.columnWidth;
+            nyScale            = runParams.maxPoolY / runParams.columnHeight;
+            nf                 = runParams.layersToClassifyFeatures[layerName];
             phase              = 1;
             writeStep          = 1;
             initialWriteTime   = 1;
             resetToStartOnLoop = false;
+            sparseLayer        = true;
+            writeSparseValues  = true;
             VThresh            = -infinity;
             AMin               = -infinity;
             AMax               = infinity;
             AShift             = 0;
-            probability        = inputDropout;
             InitVType          = "ZeroV";
          }
       );
@@ -59,13 +60,13 @@ for index, layerName in pairs(layersToClassify) do
             groupType             = "PoolingConn";
             channelCode           = 0;
             preLayerName          = layerName;
-            postLayerName         = maxPoolLayerName;
+            postLayerName         = layerName .. "MaxPool";
             pvpatchAccumulateType = "maxpooling";
-            receiveGpu            = useGpu;
+            receiveGpu            = runParams.useGpu;
             writeStep             = -1;
             nxp                   = 1;
             nyp                   = 1;
-            nfp                   = layersToClassifyFeatures[layerName];
+            nfp                   = runParams.layersToClassifyFeatures[layerName];
          }
       );
 end
