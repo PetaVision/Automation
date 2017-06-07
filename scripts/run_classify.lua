@@ -24,17 +24,9 @@ if not singlePhase or phaseToRun == 4 then
               .. " -t " .. runConfig.numClassThreads .. mpiPostClass);
    
    -- Copy learned weights
-   if runConfig.mpiBatchWidth > 1 then
-      os.execute("cp "
-            .. runConfig.runName .. "/runs/trainclassify/batchsweep_00/*.pvp "
-            .. runConfig.runName .. "/weights; "
-            .. "cd " .. runConfig.runName .. "/weights; "
-            .. "rename 's/_0\\.pvp/\\.pvp/' *.pvp"); -- Rename Weights_0.pvp to Weights.pvp
-   else
-      os.execute("cp "
-            .. runConfig.runName .. "/runs/trainclassify/*.pvp "
-            .. runConfig.runName .. "/weights");
-   end
+   os.execute("cp "
+         .. runConfig.runName .. "/runs/trainclassify/*.pvp "
+         .. runConfig.runName .. "/weights");
 end
 
 if not singlePhase or phaseToRun == 5 then

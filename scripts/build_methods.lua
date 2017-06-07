@@ -38,23 +38,9 @@ function makeClassesTxt(runConfig, runParams)
       numCategories = numCategories + 1;
    end
    io.close(classesFile);
-   if runConfig.mpiBatchWidth > 1 then
-      for mpiIndex = 0, runConfig.mpiBatchWidth-1 do
-         local batchPath = string.format("batchsweep_%02d/", mpiIndex);
-         os.execute("mkdir -p " .. runConfig.runsDir .. "writetrain/" .. batchPath);
-         os.execute("mkdir -p " .. runConfig.runsDir .. "writetest/" .. batchPath);
-         os.execute("cp "
-               .. runConfig.runsDir .. "writetrain/classes.txt "
-               .. runConfig.runsDir .. "writetest/" .. batchPath);
-         os.execute("cp "
-               .. runConfig.runsDir .. "writetrain/classes.txt "
-               .. runConfig.runsDir .. "writetrain/" .. batchPath);
-      end
-   else
-      os.execute("cp "
+   os.execute("cp "
             .. runConfig.runsDir .. "writetrain/classes.txt "
             .. runConfig.runsDir .. "writetest/classes.txt");
-   end
 end
 
 function sanitizeParamsFile(runConfig, paramsTable, suffix)

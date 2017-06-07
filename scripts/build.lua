@@ -78,7 +78,7 @@ for k, v in pairs(params) do
       v.plasticityFlag   = false;
       v.weightInitType   = "FileWeight";
       v.initWeightsFile  = "dictionary/" .. k .. ".pvp";
-      v.initialWriteTime = 0;
+      v.initialWriteTime = -1;
       v.writeStep        = -1;
    end
 end
