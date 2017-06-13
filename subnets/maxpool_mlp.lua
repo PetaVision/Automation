@@ -166,78 +166,146 @@ if runParams.allHiddenLayer then
 end
 
 for index, layerName in pairs(runParams.layersToClassify) do
-   pv.addGroup(pvClassifier, layerName, {
-            groupType              = "PvpLayer";
-            nxScale                = runParams.maxPoolX / runParams.columnWidth;
-            nyScale                = runParams.maxPoolY / runParams.columnHeight;
---            nxScale                = runParams.layersToClassifyXScale[layerName];
---            nyScale                = runParams.layersToClassifyYScale[layerName];
-            nf                     = runParams.layersToClassifyFeatures[layerName];
-            phase                  = 0;
-            displayPeriod          = 1;
-            batchMethod            = "random";
-            randomSeed             = 5;
-            writeStep              = -1;
-            initialWriteTime       = -1;
-            resetToStartOnLoop     = false;
-            normalizeLuminanceFlag = true;
-            normalizeStdDev        = true;
-            InitVType              = "ZeroV";
-            sparseLayer      = true;
-         }
-      );
 
-   pv.addGroup(pvClassifier, layerName .. "MaxPool", {
-            groupType          = "DropoutLayer";
-            nxScale            = runParams.maxPoolX / runParams.columnWidth;
-            nyScale            = runParams.maxPoolY / runParams.columnHeight;
-            nf                 = runParams.layersToClassifyFeatures[layerName];
-            phase              = 1;
-            writeStep          = -1;
-            initialWriteTime   = -1;
-            VThresh            = -infinity;
-            AMin               = -infinity;
-            AMax               = infinity;
-            AShift             = 0;
-            probability        = runParams.inputDropout;
-            InitVType          = "ZeroV";
-            sparseLayer        = true;
-         }
-      );
+   if runParams.layersToClassifyXScale[layerName] == 1/runParams.columnWidth and runParams.layersToClassifyYScale[layerName] == 1/runParams.columnHeight then
+      pv.addGroup(pvClassifier, layerName, {
+               groupType              = "PvpLayer";
+               nxScale                = runParams.layersToClassifyXScale[layerName];
+               nyScale                = runParams.layersToClassifyYScale[layerName];
+               nf                     = runParams.layersToClassifyFeatures[layerName];
+               phase                  = 0;
+               displayPeriod          = 1;
+               batchMethod            = "random";
+               randomSeed             = 5;
+               writeStep              = -1;
+               initialWriteTime       = -1;
+               resetToStartOnLoop     = false;
+               normalizeLuminanceFlag = true;
+               normalizeStdDev        = true;
+               InitVType              = "ZeroV";
+               sparseLayer      = true;
+            }
+         );
+      pv.addGroup(pvClassifier, layerName .. "MaxPool", {
+               groupType          = "DropoutLayer";
+               nxScale            = runParams.layersToClassifyXScale[layerName];
+               nyScale            = runParams.layersToClassifyYScale[layerName];
+               nf                 = runParams.layersToClassifyFeatures[layerName];
+               phase              = 1;
+               writeStep          = -1;
+               initialWriteTime   = -1;
+               VThresh            = -infinity;
+               AMin               = -infinity;
+               AMax               = infinity;
+               AShift             = 0;
+               probability        = runParams.inputDropout;
+               InitVType          = "ZeroV";
+               sparseLayer        = true;
+            }
+         );
 
-   pv.addGroup(pvClassifier, layerName .. "HiddenError", {
-            groupType        = "MaskLayer";
-            nxScale          = runParams.hiddenXScale * runParams.maxPoolX / runParams.columnWidth;
-            nyScale          = runParams.hiddenYScale * runParams.maxPoolY / runParams.columnHeight;
-            nf               = runParams.hiddenFeatures;
-            phase            = 8;
-            writeStep        = -1;
-            initialWriteTime = -1;
-            maskLayerName    = layerName .. "Hidden";
-            maskMethod       = "layer";
-            InitVType        = "ZeroV";
-            sparseLayer      = true;
-         }
-      );
+      pv.addGroup(pvClassifier, layerName .. "HiddenError", {
+               groupType        = "MaskLayer";
+               nxScale          = runParams.layersToClassifyXScale[layerName];
+               nyScale          = runParams.layersToClassifyYScale[layerName];
+               nf               = runParams.hiddenFeatures;
+               phase            = 8;
+               writeStep        = -1;
+               initialWriteTime = -1;
+               maskLayerName    = layerName .. "Hidden";
+               maskMethod       = "layer";
+               InitVType        = "ZeroV";
+               sparseLayer      = true;
+            }
+         );
 
-   pv.addGroup(pvClassifier, layerName .. "Hidden", {
-            groupType        = "DropoutLayer";
-            nxScale          = runParams.hiddenXScale * runParams.maxPoolX / runParams.columnWidth;
-            nyScale          = runParams.hiddenYScale * runParams.maxPoolY / runParams.columnHeight;
-            nf               = runParams.hiddenFeatures;
-            phase            = 2;
-            writeStep        = -1;
-            initialWriteTime = -1;
-            VThresh          = 0;
-            AMin             = 0;
-            AMax             = infinity;
-            AShift           = 0;
-            probability      = runParams.hiddenDropout;
-            InitVType        = "ZeroV";
-            sparseLayer      = true;
-         }
-      );
+      pv.addGroup(pvClassifier, layerName .. "Hidden", {
+               groupType        = "DropoutLayer";
+               nxScale          = runParams.layersToClassifyXScale[layerName];
+               nyScale          = runParams.layersToClassifyYScale[layerName];
+               nf               = runParams.hiddenFeatures;
+               phase            = 2;
+               writeStep        = -1;
+               initialWriteTime = -1;
+               VThresh          = 0;
+               AMin             = 0;
+               AMax             = infinity;
+               AShift           = 0;
+               probability      = runParams.hiddenDropout;
+               InitVType        = "ZeroV";
+               sparseLayer      = true;
+            }
+         );
+   else
+      pv.addGroup(pvClassifier, layerName, {
+               groupType              = "PvpLayer";
+               nxScale                = runParams.maxPoolX / runParams.columnWidth;
+               nyScale                = runParams.maxPoolY / runParams.columnHeight;
+               nf                     = runParams.layersToClassifyFeatures[layerName];
+               phase                  = 0;
+               displayPeriod          = 1;
+               batchMethod            = "random";
+               randomSeed             = 5;
+               writeStep              = -1;
+               initialWriteTime       = -1;
+               resetToStartOnLoop     = false;
+               normalizeLuminanceFlag = true;
+               normalizeStdDev        = true;
+               InitVType              = "ZeroV";
+               sparseLayer      = true;
+            }
+         );
+      pv.addGroup(pvClassifier, layerName .. "MaxPool", {
+               groupType          = "DropoutLayer";
+               nxScale            = runParams.maxPoolX / runParams.columnWidth;
+               nyScale            = runParams.maxPoolY / runParams.columnHeight;
+               nf                 = runParams.layersToClassifyFeatures[layerName];
+               phase              = 1;
+               writeStep          = -1;
+               initialWriteTime   = -1;
+               VThresh            = -infinity;
+               AMin               = -infinity;
+               AMax               = infinity;
+               AShift             = 0;
+               probability        = runParams.inputDropout;
+               InitVType          = "ZeroV";
+               sparseLayer        = true;
+            }
+         );
 
+      pv.addGroup(pvClassifier, layerName .. "HiddenError", {
+               groupType        = "MaskLayer";
+               nxScale          = runParams.hiddenXScale * runParams.maxPoolX / runParams.columnWidth;
+               nyScale          = runParams.hiddenYScale * runParams.maxPoolY / runParams.columnHeight;
+               nf               = runParams.hiddenFeatures;
+               phase            = 8;
+               writeStep        = -1;
+               initialWriteTime = -1;
+               maskLayerName    = layerName .. "Hidden";
+               maskMethod       = "layer";
+               InitVType        = "ZeroV";
+               sparseLayer      = true;
+            }
+         );
+
+      pv.addGroup(pvClassifier, layerName .. "Hidden", {
+               groupType        = "DropoutLayer";
+               nxScale          = runParams.hiddenXScale * runParams.maxPoolX / runParams.columnWidth;
+               nyScale          = runParams.hiddenYScale * runParams.maxPoolY / runParams.columnHeight;
+               nf               = runParams.hiddenFeatures;
+               phase            = 2;
+               writeStep        = -1;
+               initialWriteTime = -1;
+               VThresh          = 0;
+               AMin             = 0;
+               AMax             = infinity;
+               AShift           = 0;
+               probability      = runParams.hiddenDropout;
+               InitVType        = "ZeroV";
+               sparseLayer      = true;
+            }
+         );
+   end
 
 end
 
@@ -534,7 +602,6 @@ for index, layerName in pairs(runParams.layersToClassify) do
       );
 
    end
---   else
    pv.addGroup(pvClassifier, layerName .. "HiddenToEstimateError", {
             groupType               = runParams.connectionType;
             momentumMethod          = runParams.momentumType;
@@ -644,8 +711,8 @@ for index, layerName in pairs(runParams.layersToClassify) do
             preLayerName            = maxPoolLayerName;
             postLayerName           = layerName .. "HiddenError";
             plasticityFlag          = true;
-            nxp                     = runParams.hiddenPatch;
-            nyp                     = runParams.hiddenPatch;
+            nxp                     = math.min(runParams.layersToClassifyXScale[layerName] * runParams.columnWidth, runParams.hiddenPatch);
+            nyp                     = math.min(runParams.layersToClassifyYScale[layerName] * runParams.columnHeight, runParams.hiddenPatch);
             nfp                     = runParams.hiddenFeatures;
             dWMax                   = runParams.rateFactor * runParams.learningRate;
             weightInitType          = "UniformRandomWeight";
@@ -688,8 +755,8 @@ for index, layerName in pairs(runParams.layersToClassify) do
             preLayerName            = "Bias";
             postLayerName           = layerName .. "HiddenError";
             plasticityFlag          = true;
-            nxp                     = runParams.hiddenXScale * runParams.maxPoolX;
-            nyp                     = runParams.hiddenYScale * runParams.maxPoolY;
+            nxp                     = math.min(runParams.hiddenXScale * runParams.maxPoolX, runParams.layersToClassifyXScale[layerName] * runParams.columnWidth);
+            nyp                     = math.min(runParams.hiddenYScale * runParams.maxPoolY, runParams.layersToClassifyYScale[layerName] * runParams.columnHeight);
             nfp                     = runParams.hiddenFeatures;
             dWMax                   = runParams.rateFactor * runParams.learningRate / 2;
             weightInitType          = "GaussianRandomWeight";

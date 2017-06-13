@@ -10,11 +10,11 @@ runParams = {
    paramsFile = "subnets/dsga.lua";
    classifier = "subnets/maxpool_mlp.lua";
 
-   runVersion    = 2;
+   runVersion    = 7;
    runPrefix     = "dsga_";
 
    
-   displayPeriod      = 250;
+   displayPeriod      = 500;
    columnWidth        = 32;
    columnHeight       = 32;
 
@@ -30,18 +30,18 @@ runParams = {
 
    inputFeatures      = 3;
    plasticityFlag     = true;
-   checkpointPeriod   = 10000 * 5;
+   checkpointPeriod   = 500 * 10000;
    stride             = 1;
    patchSize          = 5;
    dictionarySize     = 32;
    VThresh            = 0.2;
-   dWMax              = 0.025;
+   dWMax              = 0.0125;
    momentumTau        = 500;
    AMin               = 0;
    AMax               = infinity;
    AShift             = 0.2;
    VWidth             = 0;
-   timeConstantTau    = 50;
+   timeConstantTau    = 75;
    weightInit         = 1.0;
    sparseFraction     = 0.975;
 
@@ -100,7 +100,7 @@ runParams = {
    -- The layer names listed here will be written to disk and
    -- used as input to the classification stage
    layersToClassify = {
-         "S1", "S2"
+         "S1", "S2", "S3"
       };
 
    -- These are automatically filled in below
@@ -135,13 +135,13 @@ fullRunName = runParams.runPrefix .. runParams.runVersion;
 
 runConfig = {
    -- Threads / Rows / Columns for sparse coding
-   numSparseThreads = 1;
-   numSparseRows    = 2;
-   numSparseCols    = 2;
-   numSparseBatches = 20;
+   numSparseThreads = 10;
+   numSparseRows    = 1;
+   numSparseCols    = 1;
+   numSparseBatches = 5;
 
    -- Threads / Rows / Columns for classifier
-   numClassThreads  = 6;
+   numClassThreads  = 5;
    numClassRows     = 1;
    numClassCols     = 1;
    numClassBatches  = 40;

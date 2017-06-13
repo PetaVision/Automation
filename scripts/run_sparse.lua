@@ -31,11 +31,15 @@ local cdPre  = "cd " .. runConfig.runName .. "; ";
 
 -- Run inital training
 if not singlePhase or phaseToRun == 0 then
+   os.execute("date");
+   print("Executing learndictionary");
    os.execute(cdPre .. mpiPreSparse .. runConfig.pathToBinary
            .. " -p params/learndictionary.params"
-           .. " -t " .. runConfig.numSparseThreads .. mpiPostSparse);
+           .. " -t " .. runConfig.numSparseThreads .. mpiPostSparse
+           .. " -l logs/learndictionary.log");
 
    ---- Copy dictionary to dictionary directory
+   os.execute("date");
    for index, connName in pairs(runParams.plasticConns) do
       print("Copying " .. connName .. ".pvp\n");
       os.execute("cp "
@@ -54,25 +58,29 @@ end
 
 ---- Run write train set
 if not singlePhase or phaseToRun == 1 then
+   os.execute("date");
+   print("Executing writetrain");
    os.execute(cdPre .. mpiPreSparse .. runConfig.pathToBinary
               .. " -p params/writetrain.params"
-              .. " -t " .. runConfig.numSparseThreads .. mpiPostSparse);
+              .. " -t " .. runConfig.numSparseThreads .. mpiPostSparse
+              .. " -l logs/writetrain.log");
    
    -- Move output files and rename ground truth if generated
+   os.execute("date");
    for index, layerName in pairs(runParams.layersToClassify) do
-      if runConfig.mpiBatchWidth > 1 then
-         print("Merging batched files for " .. layerName .. "\n");
-         os.execute("octave --eval \""
-               .. "combinebatches('"
-               .. runConfig.runName .. "/runs/writetrain/', '"
-               .. layerName .. "', "
-               .. runConfig.numSparseBatches .. "', '"
-               .. "byFile', "
-               .. runConfig.mpiBatchWidth .. ", "
-               .. runParams.inputTrainFiles .. ");\"; "
-            .. "mv " .. layerName .. ".pvp "
-                     .. runConfig.runName .. "/runs/writetrain");
-      end
+--      if runConfig.mpiBatchWidth > 1 then
+--         print("Merging batched files for " .. layerName .. "\n");
+--         os.execute("octave --eval \""
+--               .. "combinebatches('"
+--               .. runConfig.runName .. "/runs/writetrain/', '"
+--               .. layerName .. "', "
+--               .. runConfig.numSparseBatches .. "', '"
+--               .. "byFile', "
+--               .. runConfig.mpiBatchWidth .. ", "
+--               .. runParams.inputTrainFiles .. ");\"; "
+--            .. "mv " .. layerName .. ".pvp "
+--                     .. runConfig.runName .. "/runs/writetrain");
+--      end
       print("Moving " .. layerName .. ".pvp\n");
       os.execute("mv "
                  .. runConfig.runName .. "/runs/writetrain/" .. layerName .. ".pvp "
@@ -86,11 +94,15 @@ end
 
 -- Run write test set
 if not singlePhase or phaseToRun == 2 then
+   os.execute("date");
+   print("Executing writetest");
    os.execute(cdPre .. mpiPreSparse .. runConfig.pathToBinary
               .. " -p params/writetest.params"
-              .. " -t " .. runConfig.numSparseThreads .. mpiPostSparse);
+              .. " -t " .. runConfig.numSparseThreads .. mpiPostSparse
+              .. " -l logs/writetest.log");
    
    -- Copy output files and rename ground truth if generated
+   os.execute("date");
    for index, layerName in pairs(runParams.layersToClassify) do
       print("Moving " .. layerName .. ".pvp\n");
       os.execute("mv "
@@ -105,11 +117,15 @@ end
 
 -- Write Maxpooled Test / Train
 if not singlePhase or phaseToRun == 3 then
+   os.execute("date");
+   print("Executing writemaxtrain");
    os.execute(cdPre .. mpiPreSparse .. runConfig.pathToBinary
               .. " -p params/writemaxtrain.params"
-              .. " -t " .. runConfig.numSparseThreads .. mpiPostSparse);
+              .. " -t " .. runConfig.numSparseThreads .. mpiPostSparse
+              .. " -l logs/writemaxtrain.log");
    
    -- Copy output files and rename ground truth if generated
+   os.execute("date");
    for index, layerName in pairs(runParams.layersToClassify) do
       print("Moving " .. layerName .. "MaxPool.pvp\n");
       os.execute("mv "
@@ -117,11 +133,15 @@ if not singlePhase or phaseToRun == 3 then
                  .. runConfig.runName .. "/sparse/train");
    end
 
+   os.execute("date");
+   print("Executing writemaxtest");
    os.execute(cdPre .. mpiPreSparse .. runConfig.pathToBinary
               .. " -p params/writemaxtest.params"
-              .. " -t " .. runConfig.numSparseThreads .. mpiPostSparse);
+              .. " -t " .. runConfig.numSparseThreads .. mpiPostSparse
+              .. " -l logs/writemaxtest.log");
    
    -- Copy output files and rename ground truth if generated
+   os.execute("date");
    for index, layerName in pairs(runParams.layersToClassify) do
       print("Moving " .. layerName .. "MaxPool.pvp\n");
       os.execute("mv "

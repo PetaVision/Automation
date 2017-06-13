@@ -16,6 +16,7 @@ function makeDirectories(runConfig)
    os.execute("mkdir -p " .. runConfig.runsDir .. "trainclassify");
    os.execute("mkdir -p " .. runConfig.runsDir .. "testclassify");
    os.execute("mkdir -p " .. runConfig.runsDir .. "scoretrain");
+   os.execute("mkdir -p " .. runConfig.runName .. "/logs");
 end
 
 function backupScripts(runConfig, runParams)
@@ -50,11 +51,12 @@ function sanitizeParamsFile(runConfig, paramsTable, suffix)
    io.close(file);
 
 
+   print("Creating " .. suffix .. ".params");
    local command = 
          "cd " .. runConfig.runName .. "; "
          .. runConfig.pathToBinary .. " -p "
          .. "params/" .. paramsTable.column.printParamsFilename
-         .. " -n; "
+         .. " -n -l /dev/null; "
          .. "cd -; cp "
          .. runConfig.runName .. "/runs/" .. suffix .. "/"
          .. paramsTable.column.printParamsFilename

@@ -60,6 +60,7 @@ for k, v in pairs(params) do
    end
 end
 
+
 -- Write the file and run it through PV with the dry run flag
 sanitizeParamsFile(runConfig, params, "learndictionary");
 
@@ -128,8 +129,13 @@ setNameAndLength(params, "writemaxtrain",
    runParams.inputTrainFiles / runConfig.numClassBatches);
 
 for index, layerName in pairs(runParams.layersToClassify) do
-   params[layerName].inputPath = "sparse/train/"
+   if params[layerName] == nil then
+      params[layerName .. "MaxPool"].inputPath = "sparse/train/"
                                  .. layerName .. ".pvp";
+   else
+      params[layerName].inputPath = "sparse/train/"
+                                 .. layerName .. ".pvp";
+   end
 end
 
 sanitizeParamsFile(runConfig, params, "writemaxtrain");
@@ -142,8 +148,13 @@ setNameAndLength(params, "writemaxtest",
    runParams.inputTestFiles / runConfig.numClassBatches);
 
 for index, layerName in pairs(runParams.layersToClassify) do
-   params[layerName].inputPath = "sparse/test/"
+   if params[layerName] == nil then
+      params[layerName .. "MaxPool"].inputPath = "sparse/test/"
                                  .. layerName .. ".pvp";
+   else
+      params[layerName].inputPath = "sparse/test/"
+                                 .. layerName .. ".pvp";
+   end
 end
 
 sanitizeParamsFile(runConfig, params, "writemaxtest");
