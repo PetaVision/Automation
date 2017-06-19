@@ -35,7 +35,7 @@ setNameAndLength(params, "learndictionary",
 for index, layerName in pairs(runParams.inputLayerNames) do
    params[layerName].displayPeriod = runParams.displayPeriod;
    params[layerName].inputPath     = runParams.inputTrainLists[index]; 
-   params[layerName].batchMethod = "random";
+   --params[layerName].batchMethod = "random";
 end
 
 for index, layerName in pairs(runParams.layersToClassify) do
@@ -120,137 +120,141 @@ end
 
 sanitizeParamsFile(runConfig, params, "writetest");
 
----------------------------------------------------------------
--- Fourth run (write maxpooled version of train sparse code) --
----------------------------------------------------------------
-
-params = dofile("subnets/write_maxpool.lua");
-setNameAndLength(params, "writemaxtrain",
-   runParams.inputTrainFiles / runConfig.numClassBatches);
-
-for index, layerName in pairs(runParams.layersToClassify) do
-   if params[layerName] == nil then
-      params[layerName .. "MaxPool"].inputPath = "sparse/train/"
-                                 .. layerName .. ".pvp";
-   else
-      params[layerName].inputPath = "sparse/train/"
-                                 .. layerName .. ".pvp";
-   end
-end
-
-sanitizeParamsFile(runConfig, params, "writemaxtrain");
-
--------------------------------------------------------------
--- Fifth run (write maxpooled version of test sparse code) --
--------------------------------------------------------------
-
-setNameAndLength(params, "writemaxtest",
-   runParams.inputTestFiles / runConfig.numClassBatches);
-
-for index, layerName in pairs(runParams.layersToClassify) do
-   if params[layerName] == nil then
-      params[layerName .. "MaxPool"].inputPath = "sparse/test/"
-                                 .. layerName .. ".pvp";
-   else
-      params[layerName].inputPath = "sparse/test/"
-                                 .. layerName .. ".pvp";
-   end
-end
-
-sanitizeParamsFile(runConfig, params, "writemaxtest");
-
-------------------------------------------------------------------
--- Sixth run (train classifier on sparse code of training set) --
-------------------------------------------------------------------
-
-params = dofile(runParams.classifier);
-
-setNameAndLength(params, "trainclassify",
-   runParams.inputTrainFiles / runConfig.numClassBatches * runParams.classifierEpochs);
-params.column.checkpointWriteStepInterval = runParams.inputTrainFiles / runConfig.numClassBatches * 10;
-
-for k, v in pairs(params) do
-   if params[k].plasticityFlag == true then
-      -- Write our plastic connections right at the end of the run
-      params[k].initialWriteTime   = params.column.stopTime;
-      params[k].writeStep          = params.column.stopTime;
-      params[k].dWMaxDecayInterval = params.column.stopTime / runParams.numRateDecays;
-   end
-end
-
-params.GroundTruth.inputPath = "groundtruth/train_gt.pvp";
-
-for index, layerName in pairs(runParams.layersToClassify) do
-   params[layerName].inputPath = "sparse/train/"
-                                 .. layerName .. "MaxPool.pvp";
-end
-
-sanitizeParamsFile(runConfig, params, "trainclassify");
-
------------------------------------------------------------
--- Seventh run (score classifier on sparse code of train set) --
------------------------------------------------------------
-
-setNameAndLength(params, "scoretrain", runParams.inputTrainFiles / runConfig.numClassBatches);
-params.column.checkpointWrite     = false;
-
-for k, v in pairs(params) do
-   if v.plasticityFlag == true then
-      v.plasticityFlag   = false;
-      v.weightInitType   = "FileWeight";
-      v.initWeightsFile  = "weights/" .. k .. ".pvp";
-      v.initialWriteTime = -1;
-      v.writeStep        = -1;
-   end
-end
-
-for index, layerName in pairs(runParams.layersToClassify) do
-   params[layerName].inputPath = "sparse/train/"
-                                 .. layerName .. "MaxPool.pvp";
-   params[layerName].batchMethod = "byFile";
-end
-
-for k,v in pairs(params) do
-   if type(v) == "table" then
-      if v["groupType"] == "DropoutLayer" then
-         v["probability"] = 0;
+if runParams.buildMaxPool then
+   ---------------------------------------------------------------
+   -- Fourth run (write maxpooled version of train sparse code) --
+   ---------------------------------------------------------------
+   
+   params = dofile("subnets/write_maxpool.lua");
+   setNameAndLength(params, "writemaxtrain",
+      runParams.inputTrainFiles / runConfig.numClassBatches);
+   
+   for index, layerName in pairs(runParams.layersToClassify) do
+      if params[layerName] == nil then
+         params[layerName .. "MaxPool"].inputPath = "sparse/train/"
+                                    .. layerName .. ".pvp";
+      else
+         params[layerName].inputPath = "sparse/train/"
+                                    .. layerName .. ".pvp";
       end
    end
+   
+   sanitizeParamsFile(runConfig, params, "writemaxtrain");
+   
+   -------------------------------------------------------------
+   -- Fifth run (write maxpooled version of test sparse code) --
+   -------------------------------------------------------------
+   
+   setNameAndLength(params, "writemaxtest",
+      runParams.inputTestFiles / runConfig.numClassBatches);
+   
+   for index, layerName in pairs(runParams.layersToClassify) do
+      if params[layerName] == nil then
+         params[layerName .. "MaxPool"].inputPath = "sparse/test/"
+                                    .. layerName .. ".pvp";
+      else
+         params[layerName].inputPath = "sparse/test/"
+                                    .. layerName .. ".pvp";
+      end
+   end
+   
+   sanitizeParamsFile(runConfig, params, "writemaxtest");
 end
 
-if params.SimpleCategoryEstimate ~= nil then
-   params.SimpleCategoryEstimate.writeStep        = 1;
-   params.SimpleCategoryEstimate.initialWriteTime = 1;
+if runParams.classifier ~= nil then
+   ------------------------------------------------------------------
+   -- Sixth run (train classifier on sparse code of training set) --
+   ------------------------------------------------------------------
+   
+   params = dofile(runParams.classifier);
+   
+   setNameAndLength(params, "trainclassify",
+      runParams.inputTrainFiles / runConfig.numClassBatches * runParams.classifierEpochs);
+   params.column.checkpointWriteStepInterval = runParams.inputTrainFiles / runConfig.numClassBatches * 10;
+   
+   for k, v in pairs(params) do
+      if params[k].plasticityFlag == true then
+         -- Write our plastic connections right at the end of the run
+         params[k].initialWriteTime   = params.column.stopTime;
+         params[k].writeStep          = params.column.stopTime;
+         params[k].dWMaxDecayInterval = params.column.stopTime / runParams.numRateDecays;
+      end
+   end
+   
+   params.GroundTruth.inputPath = "groundtruth/train_gt.pvp";
+   
+   for index, layerName in pairs(runParams.layersToClassify) do
+      params[layerName].inputPath = "sparse/train/"
+                                    .. layerName .. "MaxPool.pvp";
+   end
+   
+   sanitizeParamsFile(runConfig, params, "trainclassify");
+   
+   -----------------------------------------------------------
+   -- Seventh run (score classifier on sparse code of train set) --
+   -----------------------------------------------------------
+   
+   setNameAndLength(params, "scoretrain", runParams.inputTrainFiles / runConfig.numClassBatches);
+   params.column.checkpointWrite     = false;
+   
+   for k, v in pairs(params) do
+      if v.plasticityFlag == true then
+         v.plasticityFlag   = false;
+         v.weightInitType   = "FileWeight";
+         v.initWeightsFile  = "weights/" .. k .. ".pvp";
+         v.initialWriteTime = -1;
+         v.writeStep        = -1;
+      end
+   end
+   
+   for index, layerName in pairs(runParams.layersToClassify) do
+      params[layerName].inputPath = "sparse/train/"
+                                    .. layerName .. "MaxPool.pvp";
+      params[layerName].batchMethod = "byFile";
+   end
+   
+   for k,v in pairs(params) do
+      if type(v) == "table" then
+         if v["groupType"] == "DropoutLayer" then
+            v["probability"] = 0;
+         end
+      end
+   end
+   
+   if params.SimpleCategoryEstimate ~= nil then
+      params.SimpleCategoryEstimate.writeStep        = 1;
+      params.SimpleCategoryEstimate.initialWriteTime = 1;
+   end
+   
+   params.CategoryEstimate.writeStep        = 1;
+   params.CategoryEstimate.initialWriteTime = 1;
+   params.GroundTruth.inputPath             = "groundtruth/train_gt.pvp";
+   
+   sanitizeParamsFile(runConfig, params, "scoretrain");
+   
+   -----------------------------------------------------------
+   -- Eighth run (run classifier on sparse code of test set) --
+   -----------------------------------------------------------
+   
+   setNameAndLength(params, "testclassify", runParams.inputTestFiles / runConfig.numClassBatches);
+   
+   for index, layerName in pairs(runParams.layersToClassify) do
+      params[layerName].inputPath = "sparse/test/"
+                                    .. layerName .. "MaxPool.pvp";
+      params[layerName].batchMethod = "byFile";
+   end
+   
+   if params.SimpleCategoryEstimate ~= nil then
+      params.SimpleCategoryEstimate.writeStep        = 1;
+      params.SimpleCategoryEstimate.initialWriteTime = 1;
+   end
+   
+   params.CategoryEstimate.writeStep        = 1;
+   params.CategoryEstimate.initialWriteTime = 1;
+   params.GroundTruth.inputPath             = "groundtruth/test_gt.pvp";
+   
+   sanitizeParamsFile(runConfig, params, "testclassify");
 end
-
-params.CategoryEstimate.writeStep        = 1;
-params.CategoryEstimate.initialWriteTime = 1;
-params.GroundTruth.inputPath             = "groundtruth/train_gt.pvp";
-
-sanitizeParamsFile(runConfig, params, "scoretrain");
-
------------------------------------------------------------
--- Eighth run (run classifier on sparse code of test set) --
------------------------------------------------------------
-
-setNameAndLength(params, "testclassify", runParams.inputTestFiles / runConfig.numClassBatches);
-
-for index, layerName in pairs(runParams.layersToClassify) do
-   params[layerName].inputPath = "sparse/test/"
-                                 .. layerName .. "MaxPool.pvp";
-   params[layerName].batchMethod = "byFile";
-end
-
-if params.SimpleCategoryEstimate ~= nil then
-   params.SimpleCategoryEstimate.writeStep        = 1;
-   params.SimpleCategoryEstimate.initialWriteTime = 1;
-end
-
-params.CategoryEstimate.writeStep        = 1;
-params.CategoryEstimate.initialWriteTime = 1;
-params.GroundTruth.inputPath             = "groundtruth/test_gt.pvp";
-
-sanitizeParamsFile(runConfig, params, "testclassify");
 
 print("---------------------------------------\n");
 print("  Finished generating " .. runConfig.runName .. "\n");
@@ -259,6 +263,11 @@ print("---------------------------------------\n");
 local doSparse   = true;
 local doClassify = true;
 local doAnalysis = true;
+
+if runParams.classifier == nil then
+   doClassify = false;
+   doAnalysis = false;
+end
 
 singlePhase = false;
 phaseToRun  = -1;

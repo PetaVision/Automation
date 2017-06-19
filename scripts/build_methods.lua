@@ -23,7 +23,9 @@ function backupScripts(runConfig, runParams)
    -- Copy the lua files being used into the project for future reference
    os.execute("cp " .. debug.getinfo(1).short_src .. " " .. runConfig.luaDir);
    os.execute("cp " .. runParams.paramsFile .. " " .. runConfig.luaDir);
-   os.execute("cp " .. runParams.classifier .. " " .. runConfig.luaDir);
+   if runParams.classifier ~= nil then
+      os.execute("cp " .. runParams.classifier .. " " .. runConfig.luaDir);
+   end
    os.execute("cp scripts/build.lua " .. runConfig.luaDir);
    os.execute("cp scripts/run_sparse.lua " .. runConfig.luaDir);
    os.execute("cp scripts/run_classify.lua " .. runConfig.luaDir);
